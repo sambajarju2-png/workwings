@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/payments/process-fast-payouts",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
