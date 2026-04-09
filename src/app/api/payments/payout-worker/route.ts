@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   }
 
   const counterparty = await revolutClient.createCounterparty({
-    name: `${worker.first_name} ${worker.last_name}`, iban: worker.iban, phone: worker.phone,
+    name: `${worker.first_name} ${worker.last_name}`, iban: worker.iban,
   });
   if (!counterparty.success) return NextResponse.json({ error: counterparty.error }, { status: 500 });
 
