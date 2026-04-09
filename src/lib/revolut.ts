@@ -1,23 +1,50 @@
 /**
  * Revolut Business API Client — JWT Certificate Auth
- * Docs: https://developer.revolut.com/docs/business/business-api
  */
 
 import { SignJWT, importPKCS8 } from "jose";
+import { createPrivateKey } from "crypto";
 
 const PRODUCTION_URL = "https://b2b.revolut.com/api/1.0";
 const SANDBOX_URL = "https://sandbox-b2b.revolut.com/api/1.0";
-const PRODUCTION_AUTH_URL = "https://b2b.revolut.com";
-const SANDBOX_AUTH_URL = "https://sandbox-b2b.revolut.com";
+const PRODUCTION_AUTH = "https://b2b.revolut.com";
+const SANDBOX_AUTH = "https://sandbox-b2b.revolut.com";
 
 function getBaseUrl() {
   return process.env.REVOLUT_ENVIRONMENT === "production" ? PRODUCTION_URL : SANDBOX_URL;
 }
 function getAuthUrl() {
-  return process.env.REVOLUT_ENVIRONMENT === "production" ? PRODUCTION_AUTH_URL : SANDBOX_AUTH_URL;
+  return process.env.REVOLUT_ENVIRONMENT === "production" ? PRODUCTION_AUTH : SANDBOX_AUTH;
 }
 function isConfigured() {
   return !!(process.env.REVOLUT_CLIENT_ID && process.env.REVOLUT_BUSINESS_PRIVATE_KEY);
+}
+
+/**
+ * Parse PEM private key — handles:
+ * - Newlines stripped by Vercel (base64 on one line)
+ * - PKCS#1 format (BEGIN RSA PRIVATE KEY) → converts to PKCS#8
+ * - PKCS#8 format (BEGIN PRIVATE KEY) → uses directly
+ */
+function parsePrivateKey(): string {
+  let pem = process.env.REVOLUT_BUSINESS_PRIVATE_KEY || "";
+
+  // Fix escaped newlines from env vars
+  pem = pem.replace(/\\n/g, "\n");
+
+  // If it doesn't have proper PEM headers, try to reconstruct
+  if (!pem.includes("-----BEGIN")) {
+    // Raw base64 — wrap in PKCS#1 headers
+    pem = `-----BEGIN RSA PRIVATE KEY-----\n${pem}\n-----END RSA PRIVATE KEY-----`;
+  }
+
+  // Convert PKCS#1 (RSA PRIVATE KEY) to PKCS#8 (PRIVATE KEY) using Node crypto
+  if (pem.includes("RSA PRIVATE KEY")) {
+    const key = createPrivateKey({ key: pem, format: "pem" });
+    pem = key.export({ type: "pkcs8", format: "pem" }) as string;
+  }
+
+  return pem;
 }
 
 // ============================================
@@ -26,34 +53,24 @@ function isConfigured() {
 
 let cachedToken: { access_token: string; expires_at: number } | null = null;
 
-async function signJWT(): Promise<string> {
-  const privateKeyPem = process.env.REVOLUT_BUSINESS_PRIVATE_KEY!;
-  const clientId = process.env.REVOLUT_CLIENT_ID!;
-  const authUrl = getAuthUrl();
-
-  const privateKey = await importPKCS8(privateKeyPem, "RS256");
-
-  const jwt = await new SignJWT({})
-    .setProtectedHeader({ alg: "RS256", typ: "JWT" })
-    .setIssuedAt()
-    .setIssuer(authUrl.includes("sandbox") ? "revolut-sandbox" : clientId)
-    .setSubject(clientId)
-    .setAudience(`${authUrl}`)
-    .setExpirationTime("2m")
-    .sign(privateKey);
-
-  return jwt;
-}
-
 async function getAccessToken(): Promise<string> {
-  // Return cached token if still valid (with 60s buffer)
   if (cachedToken && cachedToken.expires_at > Date.now() + 60000) {
     return cachedToken.access_token;
   }
 
   const clientId = process.env.REVOLUT_CLIENT_ID!;
-  const jwt = await signJWT();
   const authUrl = getAuthUrl();
+  const pkcs8Pem = parsePrivateKey();
+  const privateKey = await importPKCS8(pkcs8Pem, "RS256");
+
+  const jwt = await new SignJWT({})
+    .setProtectedHeader({ alg: "RS256", typ: "JWT" })
+    .setIssuedAt()
+    .setIssuer(clientId)
+    .setSubject(clientId)
+    .setAudience(authUrl)
+    .setExpirationTime("2m")
+    .sign(privateKey);
 
   const res = await fetch(`${authUrl}/api/1.0/auth/token`, {
     method: "POST",
@@ -82,139 +99,83 @@ async function getAccessToken(): Promise<string> {
 
 async function authHeaders() {
   const token = await getAccessToken();
-  return {
-    "Authorization": `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+  return { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" };
 }
 
 // ============================================
-// COUNTERPARTIES (Worker bank accounts)
+// API Methods
 // ============================================
 
 export async function createCounterparty(input: {
   name: string; iban: string; bic?: string; email?: string; phone?: string;
 }) {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
-
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   try {
     const res = await fetch(`${getBaseUrl()}/counterparty`, {
-      method: "POST",
-      headers: await authHeaders(),
-      body: JSON.stringify({
-        company_name: input.name,
-        bank_country: "NL",
-        currency: "EUR",
-        iban: input.iban,
-        bic: input.bic,
-        email: input.email,
-        phone: input.phone,
-      }),
+      method: "POST", headers: await authHeaders(),
+      body: JSON.stringify({ company_name: input.name, bank_country: "NL", currency: "EUR", iban: input.iban }),
     });
-
     if (!res.ok) return { success: false as const, error: await res.text() };
     const data = await res.json();
     return { success: true as const, counterparty_id: data.id as string, data };
-  } catch (err) {
-    return { success: false as const, error: String(err) };
-  }
+  } catch (err) { return { success: false as const, error: String(err) }; }
 }
 
 export async function getCounterparties() {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   try {
     const res = await fetch(`${getBaseUrl()}/counterparties`, { headers: await authHeaders() });
     if (!res.ok) return { success: false as const, error: await res.text() };
     return { success: true as const, data: await res.json() };
-  } catch (err) {
-    return { success: false as const, error: String(err) };
-  }
+  } catch (err) { return { success: false as const, error: String(err) }; }
 }
-
-// ============================================
-// PAYMENTS (SEPA payouts to workers)
-// ============================================
 
 export async function createPayment(input: {
   counterparty_id: string; account_id: string; amount: number;
   currency?: string; reference: string; request_id: string;
 }) {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
-
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   try {
     const res = await fetch(`${getBaseUrl()}/pay`, {
-      method: "POST",
-      headers: await authHeaders(),
+      method: "POST", headers: await authHeaders(),
       body: JSON.stringify({
-        request_id: input.request_id,
-        account_id: input.account_id,
+        request_id: input.request_id, account_id: input.account_id,
         receiver: { counterparty_id: input.counterparty_id },
-        amount: input.amount,
-        currency: input.currency || "EUR",
-        reference: input.reference,
+        amount: input.amount, currency: input.currency || "EUR", reference: input.reference,
       }),
     });
-
     if (!res.ok) return { success: false as const, error: await res.text() };
     const data = await res.json();
     return { success: true as const, payment_id: data.id as string, status: data.state as string, data };
-  } catch (err) {
-    return { success: false as const, error: String(err) };
-  }
+  } catch (err) { return { success: false as const, error: String(err) }; }
 }
 
 export async function getPayment(paymentId: string) {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   try {
     const res = await fetch(`${getBaseUrl()}/transaction/${paymentId}`, { headers: await authHeaders() });
     if (!res.ok) return { success: false as const, error: await res.text() };
     return { success: true as const, data: await res.json() };
-  } catch (err) {
-    return { success: false as const, error: String(err) };
-  }
+  } catch (err) { return { success: false as const, error: String(err) }; }
 }
 
-// ============================================
-// ACCOUNTS (Revolut balances)
-// ============================================
-
 export async function getAccounts() {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   try {
     const res = await fetch(`${getBaseUrl()}/accounts`, { headers: await authHeaders() });
     if (!res.ok) return { success: false as const, error: await res.text() };
     return { success: true as const, data: await res.json() };
-  } catch (err) {
-    return { success: false as const, error: String(err) };
-  }
+  } catch (err) { return { success: false as const, error: String(err) }; }
 }
-
-// ============================================
-// BATCH PAYMENTS
-// ============================================
 
 export async function createBatchPayment(accountId: string, payments: {
   counterparty_id: string; amount: number; reference: string; request_id: string;
 }[]) {
-  if (!isConfigured()) return { success: false as const, error: "Revolut not configured" };
-
+  if (!isConfigured()) return { success: false as const, error: "Not configured" };
   const results = await Promise.allSettled(
-    payments.map(p => createPayment({
-      counterparty_id: p.counterparty_id, account_id: accountId,
-      amount: p.amount, reference: p.reference, request_id: p.request_id,
-    }))
+    payments.map(p => createPayment({ counterparty_id: p.counterparty_id, account_id: accountId, amount: p.amount, reference: p.reference, request_id: p.request_id }))
   );
-
-  return {
-    success: true as const,
-    results: results.map((r, i) => ({
-      reference: payments[i].reference,
-      result: r.status === "fulfilled" ? r.value : { success: false as const, error: String(r.reason) },
-    })),
-  };
+  return { success: true as const, results: results.map((r, i) => ({ reference: payments[i].reference, result: r.status === "fulfilled" ? r.value : { success: false as const, error: String(r.reason) } })) };
 }
 
-export const revolutClient = {
-  isConfigured, getAccessToken, createCounterparty, getCounterparties,
-  createPayment, getPayment, getAccounts, createBatchPayment,
-};
+export const revolutClient = { isConfigured, getAccessToken, createCounterparty, getCounterparties, createPayment, getPayment, getAccounts, createBatchPayment };
