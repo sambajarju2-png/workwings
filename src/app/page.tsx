@@ -1,3 +1,4 @@
+import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { LogoMarquee } from "@/components/logo-marquee";
 import { Stats } from "@/components/stats";
@@ -5,17 +6,15 @@ import { HowItWorks } from "@/components/how-it-works";
 import { Features } from "@/components/features";
 import { Comparison } from "@/components/comparison";
 import { Sectors } from "@/components/sectors";
-import { ForCompanies } from "@/components/for-companies";
 import { AboutUs } from "@/components/about-us";
 import { Testimonials } from "@/components/testimonials";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
-import { Navbar } from "@/components/navbar";
 import { JsonLd } from "@/components/json-ld";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="overflow-x-hidden">
+    <main>
       <JsonLd />
       <Navbar />
       <Hero />
@@ -25,7 +24,6 @@ export default function Home() {
       <Features />
       <Comparison />
       <Sectors />
-      <ForCompanies />
       <AboutUs />
       <Testimonials />
       <CTA />

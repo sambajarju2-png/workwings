@@ -5,8 +5,8 @@ import { Menu, X, ChevronRight } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
 const links = [
-  { label: "Voor Freelancers", href: "#hoe-werkt-het" },
-  { label: "Voor Bedrijven", href: "#bedrijven" },
+  { label: "Voor Freelancers", href: "/" },
+  { label: "Voor Bedrijven", href: "/zakelijk" },
   { label: "Branches", href: "#branches" },
   { label: "Over Ons", href: "#over" },
 ];
