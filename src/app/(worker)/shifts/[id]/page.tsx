@@ -10,6 +10,8 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
   const [shift, setShift] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
+  const [showNegotiate, setShowNegotiate] = useState(false);
+  const [proposedRate, setProposedRate] = useState("");
   const [applied, setApplied] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 

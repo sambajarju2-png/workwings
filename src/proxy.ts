@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const publicPaths = ["/", "/zakelijk", "/sitemap.xml", "/robots.txt", "/llms.txt", "/manifest.json"];
+const publicPaths = ["/", "/zakelijk", "/sitemap.xml", "/robots.txt", "/llms.txt", "/manifest.json", "/privacy", "/voorwaarden", "/cookies"];
 const authPaths = ["/login", "/signup"];
 
 export async function proxy(request: NextRequest) {

@@ -35,8 +35,13 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold text-sm mb-4">WorkWings</h4>
             <div className="space-y-2">
-              {["Over Ons", "Newsroom", "Careers", "Privacy Policy", "Algemene Voorwaarden"].map(l => (
-                <a key={l} href="#" className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l}</a>
+              {[
+                { label: "Over Ons", href: "#over" },
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Algemene Voorwaarden", href: "/voorwaarden" },
+                { label: "Cookiebeleid", href: "/cookies" },
+              ].map(l => (
+                <a key={l.label} href={l.href} className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l.label}</a>
               ))}
             </div>
           </div>

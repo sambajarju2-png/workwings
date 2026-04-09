@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   other: { "apple-mobile-web-app-capable": "yes" },
 };
 
+import { CookieConsent } from "@/components/cookie-consent";
+import { ServiceWorkerRegister } from "@/components/sw-register";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="nl" suppressHydrationWarning>
@@ -34,7 +37,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <CookieConsent />
+          <ServiceWorkerRegister />
+        </Providers>
       </body>
     </html>
   );
