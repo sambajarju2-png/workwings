@@ -1,146 +1,228 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Clock, Euro, Users, Star, CheckCircle, MessageSquare } from "lucide-react";
+import { ArrowLeft, Heart, MoreHorizontal, MapPin, Clock, Users, Coffee, Shirt, Star, CheckCircle, AlertCircle, MessageSquare, Navigation } from "lucide-react";
 import Link from "next/link";
 
-// Mock — will be Supabase fetch
 const shift = {
-  id: "1", title: "Barista", company: "Coffee Company", companyRating: 4.7,
-  sector: "horeca", rate: 22, date: "2026-04-10", start: "08:00", end: "16:00",
-  city: "Amsterdam", address: "Herengracht 182, Amsterdam",
-  workers_needed: 2, workers_filled: 1,
-  description: "We zoeken een enthousiaste barista voor onze vestiging aan de Herengracht. Je maakt koffie, helpt klanten en houdt de zaak netjes. Ervaring met espressomachines is een plus maar niet vereist.",
-  requirements: ["Minimaal 18 jaar", "KVK-inschrijving", "Nette uitstraling"],
+  id: "1", title: "Barista Ochtend", company: "Coffee Company", companyRating: 4.7, companyReviews: 128,
+  companyDescription: "Coffee Company is een van de populairste koffieketens van Amsterdam. We staan bekend om onze specialty coffee en relaxte sfeer.",
+  sector: "Horeca", rate: 22, date: "Do, 10 apr", start: "08:00", end: "16:00",
+  city: "Amsterdam", address: "Herengracht 182", postcode: "1016 BR Amsterdam",
+  distance: "1.2 km", workers_needed: 2, workers_filled: 1,
+  description: "We zoeken een enthousiaste barista voor onze vestiging aan de Herengracht. Je maakt specialty koffie, helpt klanten en houdt de zaak netjes. Ervaring met espressomachines is een plus maar niet vereist.",
+  requirements: ["Minimaal 18 jaar", "KVK-inschrijving", "Nederlands spreken"],
+  skills: [{ name: "Koffie zetten", match: true }, { name: "Klantvriendelijk", match: true }, { name: "Kassawerk", match: false }, { name: "Schoonmaken", match: true }],
   dress_code: "Zwart shirt, eigen schoenen",
-  parking: "Betaald parkeren in de buurt, OV aanbevolen",
+  break_info: "30 minuten pauze (onbetaald)",
+  cancellation: "Annuleer minimaal 24 uur van tevoren",
+  directPay: true,
 };
 
 export default function ShiftDetailPage() {
   const [applied, setApplied] = useState(false);
   const [proposedRate, setProposedRate] = useState(shift.rate.toString());
+  const [showNegotiate, setShowNegotiate] = useState(false);
+
+  const estimatedEarnings = (shift.rate * 8).toFixed(2).replace(".", ",");
 
   return (
-    <div className="px-4 py-4 space-y-5">
-      {/* Back button */}
-      <Link href="/shifts" className="inline-flex items-center gap-1 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
-        <ArrowLeft size={16} /> Terug
-      </Link>
+    <div className="pb-24">
+      {/* Header with image placeholder */}
+      <div className="relative h-56 bg-background-alt flex items-center justify-center">
+        <div className="text-foreground-subtle text-xs">Bedrijfsfoto</div>
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+          <Link href="/shifts" className="w-9 h-9 rounded-full bg-surface/80 backdrop-blur flex items-center justify-center">
+            <ArrowLeft size={18} className="text-foreground" />
+          </Link>
+          <div className="flex gap-2">
+            <button className="w-9 h-9 rounded-full bg-surface/80 backdrop-blur flex items-center justify-center">
+              <Heart size={18} className="text-foreground-subtle" />
+            </button>
+            <button className="w-9 h-9 rounded-full bg-surface/80 backdrop-blur flex items-center justify-center">
+              <MoreHorizontal size={18} className="text-foreground-subtle" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-black text-white">{shift.title}</h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>{shift.company}</span>
-              <span className="flex items-center gap-0.5 text-xs px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(239,71,111,0.1)", color: "#EF476F" }}>
-                <Star size={10} fill="#EF476F" /> {shift.companyRating}
+      <div className="px-4 -mt-4">
+        {/* Main card */}
+        <div className="bg-surface rounded-2xl border border-border p-5 space-y-4">
+          {/* Company */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold" style={{color:"#A7DADC"}}>{shift.sector} · {shift.distance}</span>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-xl font-black text-foreground">{shift.title}</h1>
+
+          {/* Company info */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-foreground">{shift.company}</span>
+            <div className="flex items-center gap-1">
+              <Star size={12} fill="#f59e0b" color="#f59e0b" />
+              <span className="text-xs font-bold text-foreground">{shift.companyRating}</span>
+              <span className="text-xs text-foreground-subtle">{shift.companyReviews} ratings</span>
+            </div>
+          </div>
+
+          {/* Date/time/location */}
+          <div className="flex items-center gap-3 text-sm text-foreground-muted">
+            <span>{shift.date}</span>
+            <span className="w-px h-3 bg-border" />
+            <span>{shift.start} - {shift.end}</span>
+            <span className="w-px h-3 bg-border" />
+            <span>{shift.city}</span>
+          </div>
+
+          {/* Rate */}
+          <div className="flex items-center justify-between pt-3 border-t border-border">
+            <span className="text-xs text-foreground-subtle">{shift.workers_filled}/{shift.workers_needed} plekken</span>
+            <div>
+              <span className="text-2xl font-black text-foreground">€ {shift.rate.toFixed(2).replace(".",",")}</span>
+              <span className="text-sm text-foreground-subtle">/uur</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Map placeholder */}
+        <div className="mt-4 rounded-2xl overflow-hidden border border-border">
+          <div className="h-40 bg-background-alt flex items-center justify-center">
+            <Navigation size={24} className="text-foreground-subtle" />
+          </div>
+          <div className="p-4 bg-surface space-y-2">
+            <div className="flex items-start gap-3">
+              <MapPin size={16} className="text-foreground-subtle mt-0.5 flex-shrink-0" />
+              <div>
+                <div className="text-sm font-medium text-foreground">{shift.address}</div>
+                <div className="text-xs text-foreground-subtle">{shift.postcode}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Coffee size={16} className="text-foreground-subtle flex-shrink-0" />
+              <span className="text-sm text-foreground-muted">{shift.break_info}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Shirt size={16} className="text-foreground-subtle flex-shrink-0" />
+              <span className="text-sm text-foreground-muted">{shift.dress_code}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Users size={16} className="text-foreground-subtle flex-shrink-0" />
+              <span className="text-sm text-foreground-muted">We zoeken {shift.workers_needed} freelancer{shift.workers_needed > 1 ? "s" : ""}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Clock size={16} className="text-foreground-subtle flex-shrink-0" />
+              <span className="text-sm text-foreground-muted">{shift.cancellation}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="mt-4 bg-surface rounded-2xl border border-border p-5">
+          <p className="text-sm leading-relaxed text-foreground-muted">{shift.description}</p>
+          <button className="text-sm font-semibold mt-2" style={{color:"#EF476F"}}>meer</button>
+        </div>
+
+        {/* About company */}
+        <div className="mt-4 bg-surface rounded-2xl border border-border p-5">
+          <h3 className="text-base font-bold text-foreground mb-2">Over {shift.company}</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex gap-0.5">
+              {[1,2,3,4,5].map(n => <Star key={n} size={14} fill={n <= Math.round(shift.companyRating) ? "#f59e0b" : "none"} color="#f59e0b" />)}
+            </div>
+            <span className="text-sm font-bold text-foreground">{shift.companyRating}</span>
+            <span className="text-xs text-foreground-subtle">{shift.companyReviews} reviews</span>
+          </div>
+          <p className="text-sm text-foreground-muted leading-relaxed">{shift.companyDescription}</p>
+        </div>
+
+        {/* Skills match */}
+        <div className="mt-4 bg-surface rounded-2xl border border-border p-5">
+          <div className="flex items-center gap-2 mb-4 p-3 rounded-xl" style={{background:"rgba(167,218,220,0.08)"}}>
+            <AlertCircle size={16} style={{color:"#0e8a8d"}} />
+            <div>
+              <span className="text-sm font-semibold text-foreground">{shift.skills.filter(s=>s.match).length} van {shift.skills.length} skills matchen</span>
+              <div className="text-xs" style={{color:"#0e8a8d"}}>Je bent een goede match!</div>
+            </div>
+          </div>
+          <h3 className="text-sm font-bold text-foreground mb-3">Vereiste skills</h3>
+          <div className="flex flex-wrap gap-2">
+            {shift.skills.map((s, i) => (
+              <span key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border"
+                style={{
+                  background: s.match ? "rgba(167,218,220,0.06)" : "var(--color-background-alt)",
+                  borderColor: s.match ? "#A7DADC" : "var(--color-border)",
+                  color: "var(--color-foreground-muted)"
+                }}>
+                {s.match && <CheckCircle size={12} style={{color:"#0e8a8d"}} />}
+                {s.name}
               </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Requirements */}
+        <div className="mt-4 bg-surface rounded-2xl border border-border p-5">
+          <h3 className="text-sm font-bold text-foreground mb-3">Vereisten</h3>
+          <div className="space-y-2">
+            {shift.requirements.map((r, i) => (
+              <div key={i} className="flex items-center gap-2.5 text-sm text-foreground-muted">
+                <CheckCircle size={14} style={{color:"#0e8a8d"}} /> {r}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Benefits */}
+        <div className="mt-4 bg-surface rounded-2xl border border-border p-5 space-y-3">
+          <h3 className="text-sm font-bold text-foreground mb-1">Voordelen</h3>
+          {shift.directPay && (
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-border">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold" style={{background:"rgba(239,71,111,0.08)",color:"#EF476F"}}>WW</div>
+              <div>
+                <div className="text-sm font-semibold text-foreground">DirectPay beschikbaar</div>
+                <div className="text-xs text-foreground-subtle">Betaald binnen minuten</div>
+              </div>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-black" style={{ color: "#A7DADC" }}>€{shift.rate}</div>
-            <div className="text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>per uur</div>
-          </div>
+          )}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Info pills */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="flex flex-wrap gap-2">
-        {[
-          { icon: <Clock size={14} />, text: `${shift.start} – ${shift.end}` },
-          { icon: <MapPin size={14} />, text: shift.city },
-          { icon: <Users size={14} />, text: `${shift.workers_filled}/${shift.workers_needed} plekken` },
-          { icon: <Euro size={14} />, text: `€${shift.rate}/uur` },
-        ].map((p, i) => (
-          <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs"
-            style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.5)" }}>
-            <span style={{ color: "#A7DADC" }}>{p.icon}</span>
-            {p.text}
-          </div>
-        ))}
-      </motion.div>
-
-      {/* Description */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-        className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-        <h3 className="text-sm font-bold text-white/70 mb-2">Beschrijving</h3>
-        <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>{shift.description}</p>
-      </motion.div>
-
-      {/* Requirements */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-        <h3 className="text-sm font-bold text-white/70 mb-2">Vereisten</h3>
-        <div className="space-y-1.5">
-          {shift.requirements.map((r, i) => (
-            <div key={i} className="flex items-center gap-2 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
-              <CheckCircle size={14} style={{ color: "#A7DADC" }} /> {r}
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Details */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-        className="grid grid-cols-2 gap-3">
-        <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Kledingvoorschrift</div>
-          <div className="text-xs text-white/60">{shift.dress_code}</div>
-        </div>
-        <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Parkeren</div>
-          <div className="text-xs text-white/60">{shift.parking}</div>
-        </div>
-      </motion.div>
-
-      {/* Apply section */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="p-4 rounded-2xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      {/* Sticky bottom CTA bar — like Temper */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-border px-4 py-3 flex items-center justify-between">
         {!applied ? (
           <>
-            <h3 className="text-sm font-bold text-white mb-3">Solliciteren</h3>
-            <div className="mb-4">
-              <label className="text-xs mb-1.5 block" style={{ color: "rgba(255,255,255,0.35)" }}>
-                Jouw tarief (onderhandelbaar)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm">€</span>
-                <input type="number" value={proposedRate} onChange={(e) => setProposedRate(e.target.value)}
-                  className="w-full pl-8 pr-16 py-3 rounded-xl text-white font-bold outline-none"
-                  style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }} />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">per uur</span>
-              </div>
+            <div>
+              <div className="text-lg font-black text-foreground">€ {estimatedEarnings}</div>
+              <button onClick={() => setShowNegotiate(!showNegotiate)} className="text-xs font-semibold" style={{color:"#EF476F"}}>
+                Onderhandel tarief
+              </button>
             </div>
             <motion.button
               onClick={() => setApplied(true)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-4 rounded-xl text-white font-bold text-sm"
-              style={{ background: "#EF476F" }}>
-              Solliciteren voor €{proposedRate}/uur
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="px-8 py-3 rounded-xl text-white font-bold text-sm"
+              style={{background:"#EF476F"}}>
+              Solliciteren
             </motion.button>
           </>
         ) : (
-          <div className="text-center py-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
-              style={{ background: "rgba(167,218,220,0.15)" }}>
-              <CheckCircle size={24} style={{ color: "#A7DADC" }} />
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <CheckCircle size={20} style={{color:"#0e8a8d"}} />
+              <div>
+                <div className="text-sm font-bold text-foreground">Sollicitatie verstuurd</div>
+                <div className="text-xs text-foreground-subtle">Je hoort snel van {shift.company}</div>
+              </div>
             </div>
-            <h3 className="text-white font-bold">Sollicitatie verstuurd!</h3>
-            <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Je hoort snel van {shift.company}
-            </p>
-            <button className="mt-4 flex items-center gap-1.5 mx-auto text-xs font-semibold px-4 py-2 rounded-lg"
-              style={{ background: "rgba(255,255,255,0.06)", color: "#A7DADC" }}>
-              <MessageSquare size={14} /> Chat met {shift.company}
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold border border-border text-foreground-muted">
+              <MessageSquare size={14} /> Chat
             </button>
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
