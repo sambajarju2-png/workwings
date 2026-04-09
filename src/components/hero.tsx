@@ -172,7 +172,7 @@ export function Hero() {
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32"
-        style={{ background: "linear-gradient(to top, #FAFBFC, transparent)" }} />
+        style={{ background: "linear-gradient(to top, var(--color-background), transparent)" }} />
     </section>
   );
 }

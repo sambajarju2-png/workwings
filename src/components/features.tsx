@@ -13,52 +13,31 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-24 px-4" style={{ background: "#F0F4F8" }}>
+    <section className="py-24 px-4 bg-background-alt">
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "#EF476F" }}>
-            Waarom WorkWings
-          </span>
-          <h2 className="text-4xl md:text-5xl font-black mt-4" style={{ color: "#023047" }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+          <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "#EF476F" }}>Waarom WorkWings</span>
+          <h2 className="text-4xl md:text-5xl font-black mt-4 text-foreground">
             Gebouwd voor <span style={{ color: "#EF476F" }}>freelancers</span>,<br />
             niet voor uitzendbureau&apos;s
           </h2>
         </motion.div>
-
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="p-6 rounded-2xl bg-white relative overflow-hidden group cursor-default"
-              style={{ boxShadow: "0 1px 3px rgba(2,48,71,0.06)" }}
-            >
-              {/* Hover gradient */}
+            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }} whileHover={{ y: -6, scale: 1.02 }}
+              className="p-6 rounded-2xl bg-surface relative overflow-hidden group cursor-default"
+              style={{ boxShadow: "0 1px 3px rgba(2,48,71,0.06)", border: "1px solid var(--color-border)" }}>
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{ background: "linear-gradient(135deg, rgba(239,71,111,0.03), rgba(167,218,220,0.05))" }} />
-              
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{ background: "rgba(2,48,71,0.06)", color: "#023047" }}>
-                    {f.icon}
-                  </div>
-                  <span className="text-xs font-bold px-3 py-1 rounded-full"
-                    style={{ background: "rgba(239,71,111,0.1)", color: "#EF476F" }}>
-                    {f.tag}
-                  </span>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-foreground"
+                    style={{ background: "var(--color-background-alt)" }}>{f.icon}</div>
+                  <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: "rgba(239,71,111,0.1)", color: "#EF476F" }}>{f.tag}</span>
                 </div>
-                <h3 className="text-lg font-bold mb-2" style={{ color: "#023047" }}>{f.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#4A6B7F" }}>{f.desc}</p>
+                <h3 className="text-lg font-bold mb-2 text-foreground">{f.title}</h3>
+                <p className="text-sm leading-relaxed text-foreground-muted">{f.desc}</p>
               </div>
             </motion.div>
           ))}

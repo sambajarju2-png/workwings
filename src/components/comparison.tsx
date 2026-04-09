@@ -19,47 +19,31 @@ const rows: { feature: string; workwings: CellValue; temper: CellValue; youngone
 
 function Cell({ value, highlight }: { value: CellValue; highlight?: boolean }) {
   if (value === "yes") return <Check size={18} style={{ color: highlight ? "#EF476F" : "#22c55e" }} strokeWidth={3} />;
-  if (value === "no") return <X size={18} style={{ color: "#cbd5e1" }} strokeWidth={2} />;
+  if (value === "no") return <X size={18} style={{ color: "var(--color-foreground-subtle)" }} strokeWidth={2} />;
   if (value === "partial") return <Minus size={18} style={{ color: "#f59e0b" }} strokeWidth={2} />;
-  return <span className={`text-sm font-semibold ${highlight ? "text-white" : ""}`} style={highlight ? { color: "#EF476F" } : { color: "#4A6B7F" }}>{value}</span>;
+  return <span className={`text-sm font-semibold ${highlight ? "" : "text-foreground-muted"}`} style={highlight ? { color: "#EF476F" } : {}}>{value}</span>;
 }
 
 export function Comparison() {
   return (
-    <section className="py-24 px-4" style={{ background: "#F0F4F8" }}>
+    <section className="py-24 px-4 bg-background-alt">
       <div className="max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
           <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "#EF476F" }}>Vergelijk</span>
-          <h2 className="text-4xl md:text-5xl font-black mt-4" style={{ color: "#023047" }}>
-            Waarom <span style={{ color: "#EF476F" }}>wij</span> anders zijn
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-black mt-4 text-foreground">Waarom <span style={{ color: "#EF476F" }}>wij</span> anders zijn</h2>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="rounded-2xl overflow-hidden bg-white"
-          style={{ boxShadow: "0 4px 24px rgba(2,48,71,0.08)" }}
-        >
-          {/* Header */}
-          <div className="grid grid-cols-4 text-center text-sm font-bold" style={{ borderBottom: "1px solid #E2E8F0" }}>
-            <div className="p-4 text-left" style={{ color: "#8BA3B5" }}>Feature</div>
-            <div className="p-4 text-white rounded-t-xl" style={{ background: "#023047" }}>
-              <span style={{ color: "#EF476F" }}>Work</span>Wings
-            </div>
-            <div className="p-4" style={{ color: "#4A6B7F" }}>Temper</div>
-            <div className="p-4" style={{ color: "#4A6B7F" }}>YoungOnes</div>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="rounded-2xl overflow-hidden bg-surface" style={{ boxShadow: "0 4px 24px rgba(2,48,71,0.08)", border: "1px solid var(--color-border)" }}>
+          <div className="grid grid-cols-4 text-center text-sm font-bold" style={{ borderBottom: "1px solid var(--color-border)" }}>
+            <div className="p-4 text-left text-foreground-subtle">Feature</div>
+            <div className="p-4 text-white rounded-t-xl" style={{ background: "#023047" }}><span style={{ color: "#EF476F" }}>Work</span>Wings</div>
+            <div className="p-4 text-foreground-muted">Temper</div>
+            <div className="p-4 text-foreground-muted">YoungOnes</div>
           </div>
-
-          {/* Rows */}
           {rows.map((row, i) => (
-            <div key={i} className="grid grid-cols-4 items-center text-center text-sm"
-              style={{ borderBottom: i < rows.length - 1 ? "1px solid #F0F4F8" : "none" }}>
-              <div className="p-4 text-left font-medium" style={{ color: "#4A6B7F" }}>{row.feature}</div>
-              <div className="p-4 flex justify-center" style={{ background: "rgba(2,48,71,0.03)" }}>
-                <Cell value={row.workwings} highlight />
-              </div>
+            <div key={i} className="grid grid-cols-4 items-center text-center text-sm" style={{ borderBottom: i < rows.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+              <div className="p-4 text-left font-medium text-foreground-muted">{row.feature}</div>
+              <div className="p-4 flex justify-center" style={{ background: "rgba(2,48,71,0.03)" }}><Cell value={row.workwings} highlight /></div>
               <div className="p-4 flex justify-center"><Cell value={row.temper} /></div>
               <div className="p-4 flex justify-center"><Cell value={row.youngones} /></div>
             </div>

@@ -33,7 +33,7 @@ const stats = [
 
 export function Stats() {
   return (
-    <section className="py-20 relative">
+    <section className="py-20 relative bg-background">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((s, i) => (
@@ -43,13 +43,13 @@ export function Stats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="text-center p-6 rounded-2xl"
-              style={{ background: "#FFFFFF", boxShadow: "0 1px 3px rgba(2,48,71,0.06)" }}
+              className="text-center p-6 rounded-2xl bg-surface shadow-sm dark:shadow-none"
+              style={{ border: "1px solid var(--color-border)" }}
             >
-              <div className="text-4xl md:text-5xl font-black" style={{ color: "#023047" }}>
+              <div className="text-4xl md:text-5xl font-black text-foreground">
                 <AnimatedNumber value={s.value} suffix={s.suffix} />
               </div>
-              <div className="text-sm mt-2 font-medium" style={{ color: "#4A6B7F" }}>{s.label}</div>
+              <div className="text-sm mt-2 font-medium text-foreground-muted">{s.label}</div>
             </motion.div>
           ))}
         </div>
