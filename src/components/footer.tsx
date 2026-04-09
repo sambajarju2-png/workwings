@@ -47,7 +47,7 @@ export function Footer() {
             © 2026 WorkWings B.V. · KVK 12345678 · Alle rechten voorbehouden
           </span>
           <div className="flex items-center gap-2">
-            <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>🇳🇱 Made in the Netherlands</span>
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Made in the Netherlands</span>
           </div>
         </div>
       </div>

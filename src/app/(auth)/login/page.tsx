@@ -106,7 +106,7 @@ export default function LoginPage() {
                 }`}
                 style={tab === t ? { background: "rgba(255,255,255,0.1)" } : {}}
               >
-                {t === "worker" ? "🧑‍💼 Freelancer" : "🏢 Bedrijf"}
+                {t === "worker" ? "Freelancer" : "Bedrijf"}
               </button>
             ))}
           </div>

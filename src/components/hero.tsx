@@ -41,7 +41,7 @@ export function Hero() {
         >
           <Zap size={14} style={{ color: "#EF476F" }} />
           <span className="text-sm font-semibold" style={{ color: "#EF476F" }}>
-            🇳🇱 #1 Freelance Shift Platform van Nederland
+            #1 Freelance Shift Platform van Nederland
           </span>
         </motion.div>
 

@@ -5,12 +5,12 @@ import { ArrowRight, Mail, Building2, Loader2, Lock } from "lucide-react";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
 const sectors = [
-  { value: "horeca", label: "🍽️ Horeca" },
-  { value: "retail", label: "🛍️ Retail" },
-  { value: "logistics", label: "📦 Logistiek" },
-  { value: "events", label: "🎉 Events" },
-  { value: "cleaning", label: "🧹 Schoonmaak" },
-  { value: "delivery", label: "🚚 Bezorging" },
+  { value: "horeca", label: "Horeca" },
+  { value: "retail", label: "Retail" },
+  { value: "logistics", label: "Logistiek" },
+  { value: "events", label: "Events" },
+  { value: "cleaning", label: "Schoonmaak" },
+  { value: "delivery", label: "Bezorging" },
 ];
 
 export default function CompanySignupPage() {

@@ -19,7 +19,7 @@ export default function WorkerDashboard() {
     <div className="px-4 py-6 space-y-6">
       {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-black text-foreground">Hey daar! 👋</h1>
+        <h1 className="text-2xl font-black text-foreground">Hey daar!</h1>
         <p className="text-sm mt-1 text-foreground-subtle">Klaar voor je volgende shift?</p>
       </motion.div>
 

@@ -6,12 +6,12 @@ const worker = {
   firstName: "Samba", lastName: "J.", city: "Amsterdam", rating: 4.9,
   totalShifts: 24, totalHours: 186, earnings: 3720, reliabilityScore: 9.2,
   sectors: ["horeca", "events", "logistics"],
-  badges: ["⚡ Altijd op tijd", "⭐ Top Worker", "🔥 10+ shifts"],
+  badges: ["Altijd op tijd", "Top Worker", "10+ shifts"],
 };
 
 const sectorLabels: Record<string, string> = {
-  horeca: "🍽️ Horeca", retail: "🛍️ Retail", logistics: "📦 Logistiek",
-  events: "🎉 Events", cleaning: "🧹 Schoonmaak", delivery: "🚚 Bezorging",
+  horeca: "Horeca", retail: "Retail", logistics: "Logistiek",
+  events: "Events", cleaning: "Schoonmaak", delivery: "Bezorging",
 };
 
 export default function ProfilePage() {

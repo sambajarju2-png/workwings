@@ -5,9 +5,9 @@ import { Search, MapPin, SlidersHorizontal, X, Clock } from "lucide-react";
 import Link from "next/link";
 
 const sectorFilters = [
-  { value: "all", label: "Alles" }, { value: "horeca", label: "🍽️ Horeca" }, { value: "retail", label: "🛍️ Retail" },
-  { value: "logistics", label: "📦 Logistiek" }, { value: "events", label: "🎉 Events" },
-  { value: "cleaning", label: "🧹 Schoonmaak" }, { value: "delivery", label: "🚚 Bezorging" },
+  { value: "all", label: "Alles" }, { value: "horeca", label: "Horeca" }, { value: "retail", label: "Retail" },
+  { value: "logistics", label: "Logistiek" }, { value: "events", label: "Events" },
+  { value: "cleaning", label: "Schoonmaak" }, { value: "delivery", label: "Bezorging" },
 ];
 
 const mockShifts = [
