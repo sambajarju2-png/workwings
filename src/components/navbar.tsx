@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 const links = [
   { label: "Voor Freelancers", href: "#hoe-werkt-het" },
@@ -48,7 +49,8 @@ export function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <a href="#" className="text-sm text-white/80 hover:text-white transition-colors font-medium px-4 py-2">
+            <ThemeToggle />
+            <a href="/login" className="text-sm text-white/80 hover:text-white transition-colors font-medium px-4 py-2">
               Inloggen
             </a>
             <motion.a

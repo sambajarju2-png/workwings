@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, CalendarPlus, List, Users, Heart, Settings, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
@@ -44,10 +45,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         ))}
       </nav>
-      <div className="p-3 border-t" style={{borderColor:"rgba(255,255,255,0.05)"}}>
-        <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full" style={{color:"rgba(255,255,255,0.3)"}}>
+      <div className="p-3 border-t flex items-center justify-between" style={{borderColor:"rgba(255,255,255,0.05)"}}>
+        <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm" style={{color:"rgba(255,255,255,0.3)"}}>
           <LogOut size={18}/>Uitloggen
         </button>
+        <ThemeToggle />
       </div>
     </>
   );

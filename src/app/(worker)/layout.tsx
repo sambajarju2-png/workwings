@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import { Home, Search, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -28,10 +29,7 @@ export default function WorkerLayout({ children }: { children: React.ReactNode }
           </div>
           <span className="text-white font-bold text-lg">Work<span style={{ color: "#EF476F" }}>Wings</span></span>
         </div>
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-          style={{ background: "rgba(255,255,255,0.1)" }}>
-          ?
-        </div>
+        <ThemeToggle />
       </header>
 
       {/* Content */}

@@ -10,6 +10,7 @@
   --color-pink-hover: #D93A5E;
   --color-teal: #A7DADC;
   --color-teal-dark: #7BC0C3;
+  /* Light mode defaults */
   --color-background: #FAFBFC;
   --color-background-alt: #F0F4F8;
   --color-surface: #FFFFFF;
@@ -22,11 +23,25 @@
 @layer base {
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+
   body {
-    color: var(--color-foreground);
-    background: var(--color-background);
     -webkit-font-smoothing: antialiased;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Dark mode overrides */
+  .dark {
+    --color-background: #060D14;
+    --color-background-alt: #0A1628;
+    --color-surface: #0F1F2E;
+    --color-foreground: #E8EDF2;
+    --color-foreground-muted: #8BA3B5;
+    --color-foreground-subtle: #5A7A8F;
+    --color-border: #1A2F40;
+  }
+
   ::selection { background: #EF476F; color: white; }
 }
 
