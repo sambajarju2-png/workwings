@@ -93,14 +93,14 @@ export default function WorkerProfilePage() {
         {/* Menu */}
         <div className="bg-surface rounded-xl border border-border divide-y divide-border mb-6">
           {[
-            { icon: <Settings size={16} />, label: "Instellingen" },
-            { icon: <CreditCard size={16} />, label: "Betalingen & facturen" },
-            { icon: <Bell size={16} />, label: "Meldingen" },
+            { icon: <Settings size={16} />, label: "Profiel bewerken", href: "/profile/edit" },
+            { icon: <CreditCard size={16} />, label: "Betalingen & facturen", href: "#" },
+            { icon: <Bell size={16} />, label: "Meldingen", href: "#" },
           ].map((m, i) => (
-            <button key={i} className="w-full flex items-center justify-between p-4 text-sm font-medium text-foreground">
+            <a key={i} href={m.href} className="w-full flex items-center justify-between p-4 text-sm font-medium text-foreground block">
               <div className="flex items-center gap-3"><span className="text-foreground-subtle">{m.icon}</span>{m.label}</div>
               <ChevronRight size={14} className="text-foreground-subtle" />
-            </button>
+            </a>
           ))}
         </div>
 
