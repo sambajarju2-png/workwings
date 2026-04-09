@@ -28,7 +28,7 @@ async function signJWT(): Promise<string> {
   const privateKey = await importPKCS8(pkcs8, "RS256");
   return new SignJWT({})
     .setProtectedHeader({ alg: "RS256", typ: "JWT" })
-    .setIssuedAt().setIssuer(clientId).setSubject(clientId)
+    .setIssuedAt().setIssuer("workwings.vercel.app").setSubject(clientId)
     .setAudience(authUrl).setExpirationTime("2m")
     .sign(privateKey);
 }

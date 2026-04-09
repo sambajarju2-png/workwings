@@ -35,7 +35,7 @@ export async function GET(req: Request) {
   const jwt = await new SignJWT({})
     .setProtectedHeader({ alg: "RS256", typ: "JWT" })
     .setIssuedAt()
-    .setIssuer(clientId)
+    .setIssuer("workwings.vercel.app")
     .setSubject(clientId)
     .setAudience(authUrl)
     .setExpirationTime("2m")
