@@ -2,7 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
-import { LayoutDashboard, CalendarPlus, List, Users, Heart, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, CalendarPlus, List, Users, Heart, Settings, LogOut, Menu, X, CreditCard } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/shifts/new", icon: CalendarPlus, label: "Nieuwe Shift" },
   { href: "/admin/applications", icon: Users, label: "Sollicitaties" },
   { href: "/admin/flexpool", icon: Heart, label: "Flexpool" },
+  { href: "/admin/payments", icon: CreditCard, label: "Betalingen" },
   { href: "/admin/settings", icon: Settings, label: "Instellingen" },
 ];
 
