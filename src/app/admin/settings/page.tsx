@@ -26,9 +26,9 @@ export default function SettingsPage() {
   const sections = [
     { icon: <Building2 size={20} />, title: "Bedrijfsprofiel", desc: "Naam, logo, header image, beschrijving", href: "/admin/settings/profile", color: "#023047" },
     { icon: <MapPin size={20} />, title: "Locaties", desc: "Vestigingen toevoegen en beheren", href: "/admin/settings/locations", color: "#EF476F" },
-    { icon: <CreditCard size={20} />, title: "Betalingen", desc: "Facturatie en betaalinstellingen", href: "#", color: "#A7DADC" },
-    { icon: <Bell size={20} />, title: "Notificaties", desc: "E-mail en push meldingen", href: "#", color: "#023047" },
-    { icon: <Users size={20} />, title: "Team", desc: "Teamleden en rollen beheren", href: "#", color: "#EF476F" },
+    { icon: <CreditCard size={20} />, title: "Betalingen", desc: "Facturatie en betaalinstellingen", href: "/admin/payments", color: "#A7DADC" },
+    { icon: <Bell size={20} />, title: "Notificaties", desc: "E-mail en push meldingen", href: "/admin/settings", color: "#023047" },
+    { icon: <Users size={20} />, title: "Team", desc: "Teamleden en rollen beheren", href: "/admin/settings", color: "#EF476F" },
   ];
 
   return (
