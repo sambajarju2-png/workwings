@@ -1,43 +1,33 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import type { Database } from "@/types/database";
 
-export async function getSupabaseServer() {
+export async function getSupabaseServerClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+    || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) return null;
+
   const cookieStore = await cookies();
 
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // Ignored in Server Components (read-only)
-          }
-        },
+  return createServerClient(url, key, {
+    cookies: {
+      getAll() { return cookieStore.getAll(); },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch { /* Server component — ignore */ }
       },
-    }
-  );
+    },
+  });
 }
 
-// Admin client — use only in server-side code (Route Handlers, Server Actions)
-import { createClient } from "@supabase/supabase-js";
+export function getSupabaseAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-let _admin: ReturnType<typeof createClient<Database>> | null = null;
+  if (!url || !key) return null;
 
-export function getSupabaseAdmin() {
-  if (!_admin) {
-    _admin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-  }
-  return _admin;
+  const { createClient } = require("@supabase/supabase-js");
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
