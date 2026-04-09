@@ -4,10 +4,10 @@ import { TrendingUp, Users, Clock, CheckCircle, CalendarPlus, ArrowRight } from 
 import Link from "next/link";
 
 const stats = [
-  { label: "Open Shifts", val: "8", change: "+2 deze week", icon: <Clock size={18}/>, color: "#EF476F" },
-  { label: "Sollicitaties", val: "34", change: "+12 vandaag", icon: <Users size={18}/>, color: "#A7DADC" },
-  { label: "Gevuld %", val: "89%", change: "+5% vs vorige maand", icon: <CheckCircle size={18}/>, color: "#22c55e" },
-  { label: "Uitgegeven", val: "€4.2K", change: "Deze maand", icon: <TrendingUp size={18}/>, color: "#EF476F" },
+  { label: "Open Shifts", val: "8", change: "+2 deze week", icon: <Clock size={18}/>, color: "#EF476F", bg: "rgba(239,71,111,0.06)" },
+  { label: "Sollicitaties", val: "34", change: "+12 vandaag", icon: <Users size={18}/>, color: "#A7DADC", bg: "rgba(167,218,220,0.1)" },
+  { label: "Gevuld %", val: "89%", change: "+5% vs vorige maand", icon: <CheckCircle size={18}/>, color: "#22c55e", bg: "rgba(34,197,94,0.06)" },
+  { label: "Uitgegeven", val: "€4.2K", change: "Deze maand", icon: <TrendingUp size={18}/>, color: "#EF476F", bg: "rgba(239,71,111,0.06)" },
 ];
 
 const recentShifts = [
@@ -18,90 +18,91 @@ const recentShifts = [
   { id:"5", title:"Afwasser", date:"13 apr", status:"draft", apps:0, filled:"0/2" },
 ];
 
-const statusColors: Record<string,{bg:string;text:string}> = {
-  open: { bg:"rgba(239,71,111,0.1)", text:"#EF476F" },
-  filled: { bg:"rgba(167,218,220,0.1)", text:"#A7DADC" },
-  draft: { bg:"rgba(255,255,255,0.05)", text:"rgba(255,255,255,0.3)" },
+const sc: Record<string,{bg:string;text:string;label:string}> = {
+  open:{bg:"rgba(239,71,111,0.08)",text:"#EF476F",label:"Open"},
+  filled:{bg:"rgba(167,218,220,0.12)",text:"#0e8a8d",label:"Gevuld"},
+  draft:{bg:"#F0F4F8",text:"#8BA3B5",label:"Concept"},
 };
 
 export default function AdminDashboard() {
   return (
-    <div className="p-6 lg:p-8 space-y-6 max-w-6xl">
+    <div className="p-6 lg:p-10 space-y-8 max-w-6xl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Dashboard</h1>
-          <p className="text-sm" style={{color:"rgba(255,255,255,0.3)"}}>Welkom terug, Coffee Company</p>
+          <h1 className="text-2xl font-black" style={{color:"#023047"}}>Dashboard</h1>
+          <p className="text-sm mt-1" style={{color:"#8BA3B5"}}>Welkom terug, Coffee Company</p>
         </div>
         <Link href="/admin/shifts/new">
-          <motion.button whileHover={{scale:1.05}} whileTap={{scale:0.95}}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-bold"
-            style={{background:"#EF476F"}}>
+          <motion.button whileHover={{scale:1.03}} whileTap={{scale:0.97}}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
+            style={{background:"linear-gradient(135deg, #EF476F, #D93A5E)"}}>
             <CalendarPlus size={16}/>Nieuwe Shift
           </motion.button>
         </Link>
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((s,i)=>(
           <motion.div key={i} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:i*0.05}}
-            className="p-4 rounded-xl" style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)"}}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium" style={{color:"rgba(255,255,255,0.35)"}}>{s.label}</span>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:`${s.color}15`,color:s.color}}>{s.icon}</div>
+            className="bg-white p-5 rounded-2xl border" style={{borderColor:"#E8EDF2"}}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider" style={{color:"#8BA3B5"}}>{s.label}</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{background:s.bg,color:s.color}}>{s.icon}</div>
             </div>
-            <div className="text-2xl font-black text-white">{s.val}</div>
-            <div className="text-[10px] mt-1" style={{color:"rgba(255,255,255,0.25)"}}>{s.change}</div>
+            <div className="text-3xl font-black" style={{color:"#023047"}}>{s.val}</div>
+            <div className="text-xs mt-1.5" style={{color:"#A7DADC"}}>{s.change}</div>
           </motion.div>
         ))}
       </div>
 
-      {/* Recent shifts table */}
+      {/* Recent shifts */}
       <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
-        className="rounded-xl overflow-hidden" style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)"}}>
-        <div className="px-4 py-3 flex items-center justify-between" style={{borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
-          <h2 className="text-sm font-bold text-white/60">Recente Shifts</h2>
+        className="bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#E8EDF2"}}>
+        <div className="px-6 py-4 flex items-center justify-between border-b" style={{borderColor:"#F0F4F8"}}>
+          <h2 className="text-sm font-bold" style={{color:"#023047"}}>Recente Shifts</h2>
           <Link href="/admin/shifts" className="text-xs font-semibold" style={{color:"#EF476F"}}>Alle shifts →</Link>
         </div>
-        <div className="divide-y" style={{borderColor:"rgba(255,255,255,0.04)"}}>
-          {recentShifts.map(s=>(
+        <div>
+          {recentShifts.map((s,i)=>(
             <Link key={s.id} href={`/admin/shifts/${s.id}`}
-              className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02] transition-colors">
+              className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50/50 transition-colors border-b last:border-b-0" style={{borderColor:"#F0F4F8"}}>
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-white font-medium truncate">{s.title}</div>
-                <div className="text-xs" style={{color:"rgba(255,255,255,0.25)"}}>{s.date}</div>
+                <div className="text-sm font-semibold" style={{color:"#023047"}}>{s.title}</div>
+                <div className="text-xs mt-0.5" style={{color:"#8BA3B5"}}>{s.date}</div>
               </div>
-              <span className="text-xs px-2.5 py-1 rounded-full font-semibold"
-                style={{background:statusColors[s.status].bg,color:statusColors[s.status].text}}>
-                {s.status}
+              <span className="text-xs px-3 py-1 rounded-full font-semibold" style={{background:sc[s.status].bg,color:sc[s.status].text}}>
+                {sc[s.status].label}
               </span>
-              <div className="text-xs text-right w-16" style={{color:"rgba(255,255,255,0.35)"}}>
+              <div className="text-xs text-right w-16" style={{color:"#8BA3B5"}}>
                 <div>{s.apps} apps</div>
                 <div>{s.filled}</div>
               </div>
-              <ArrowRight size={14} style={{color:"rgba(255,255,255,0.15)"}}/>
+              <ArrowRight size={14} style={{color:"#D0D8E0"}}/>
             </Link>
           ))}
         </div>
       </motion.div>
 
       {/* Quick actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Link href="/admin/shifts/new">
-          <motion.div whileHover={{scale:1.01}} className="p-5 rounded-xl cursor-pointer"
-            style={{background:"linear-gradient(135deg, rgba(239,71,111,0.1), rgba(239,71,111,0.05))",border:"1px solid rgba(239,71,111,0.15)"}}>
-            <CalendarPlus size={20} style={{color:"#EF476F"}} className="mb-2"/>
-            <div className="text-white font-bold text-sm">Shift aanmaken</div>
-            <div className="text-xs" style={{color:"rgba(255,255,255,0.3)"}}>Post een nieuwe shift en ontvang direct sollicitaties</div>
+          <motion.div whileHover={{scale:1.01,y:-2}} className="p-6 rounded-2xl bg-white border cursor-pointer" style={{borderColor:"#E8EDF2"}}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(239,71,111,0.08)"}}>
+              <CalendarPlus size={20} style={{color:"#EF476F"}}/>
+            </div>
+            <div className="font-bold text-sm" style={{color:"#023047"}}>Shift aanmaken</div>
+            <div className="text-xs mt-1" style={{color:"#8BA3B5"}}>Post een nieuwe shift en ontvang direct sollicitaties</div>
           </motion.div>
         </Link>
         <Link href="/admin/applications">
-          <motion.div whileHover={{scale:1.01}} className="p-5 rounded-xl cursor-pointer"
-            style={{background:"linear-gradient(135deg, rgba(167,218,220,0.1), rgba(167,218,220,0.05))",border:"1px solid rgba(167,218,220,0.15)"}}>
-            <Users size={20} style={{color:"#A7DADC"}} className="mb-2"/>
-            <div className="text-white font-bold text-sm">Sollicitaties bekijken</div>
-            <div className="text-xs" style={{color:"rgba(255,255,255,0.3)"}}>34 nieuwe sollicitaties wachten op je</div>
+          <motion.div whileHover={{scale:1.01,y:-2}} className="p-6 rounded-2xl bg-white border cursor-pointer" style={{borderColor:"#E8EDF2"}}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{background:"rgba(167,218,220,0.12)"}}>
+              <Users size={20} style={{color:"#0e8a8d"}}/>
+            </div>
+            <div className="font-bold text-sm" style={{color:"#023047"}}>Sollicitaties bekijken</div>
+            <div className="text-xs mt-1" style={{color:"#8BA3B5"}}>34 nieuwe sollicitaties wachten op je</div>
           </motion.div>
         </Link>
       </div>

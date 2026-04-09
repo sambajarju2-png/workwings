@@ -2,19 +2,22 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Fonts — inline because of Geist circular reference bug */
+/* Fonts — inline to avoid Geist circular ref bug */
 @theme inline {
   --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
 
-/* Colors — NOT inline, so CSS variables are preserved for dark mode swapping */
+/* Colors — CSS variables for dark mode swapping */
 @theme {
+  /* Brand */
   --color-navy: #023047;
   --color-pink: #EF476F;
   --color-pink-hover: #D93A5E;
   --color-teal: #A7DADC;
   --color-teal-dark: #7BC0C3;
+
+  /* Light mode (default) */
   --color-background: #FAFBFC;
   --color-background-alt: #F0F4F8;
   --color-surface: #FFFFFF;
@@ -35,24 +38,21 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Dark mode — override CSS variables */
+  /* Dark mode — SOFT navy tones, NOT harsh black */
   .dark {
-    --color-background: #060D14;
-    --color-background-alt: #0A1628;
-    --color-surface: #0F1F2E;
-    --color-foreground: #E8EDF2;
-    --color-foreground-muted: #8BA3B5;
-    --color-foreground-subtle: #5A7A8F;
-    --color-border: #1A2F40;
+    --color-background: #011825;
+    --color-background-alt: #012133;
+    --color-surface: #01293F;
+    --color-foreground: #D4E3ED;
+    --color-foreground-muted: #8BAABB;
+    --color-foreground-subtle: #5A8090;
+    --color-border: #0A3A52;
   }
 
   ::selection { background: #EF476F; color: white; }
 }
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
+/* Animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -66,7 +66,6 @@
   100% { transform: translateX(-50%); }
 }
 .animate-marquee { animation: marquee 30s linear infinite; }
-.animate-gradient { background-size: 200% 200%; animation: gradientShift 8s ease infinite; }
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 

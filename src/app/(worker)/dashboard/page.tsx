@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Clock, MapPin, TrendingUp, Star, ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
 
-// Mock data — will be replaced with Supabase queries
 const upcomingShifts = [
   { id: "1", title: "Barista", company: "Coffee Company", time: "08:00 – 16:00", date: "Morgen", rate: "€22/uur", location: "Amsterdam", color: "#EF476F" },
   { id: "2", title: "Orderpicker", company: "DHL Warehouse", time: "18:00 – 02:00", date: "Vrijdag", rate: "€19/uur", location: "Schiphol", color: "#A7DADC" },
@@ -20,8 +19,8 @@ export default function WorkerDashboard() {
     <div className="px-4 py-6 space-y-6">
       {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-black text-white">Hey daar! 👋</h1>
-        <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>Klaar voor je volgende shift?</p>
+        <h1 className="text-2xl font-black text-foreground">Hey daar! 👋</h1>
+        <p className="text-sm mt-1 text-foreground-subtle">Klaar voor je volgende shift?</p>
       </motion.div>
 
       {/* Quick stats */}
@@ -32,11 +31,10 @@ export default function WorkerDashboard() {
           { icon: <TrendingUp size={16} />, val: "€480", label: "Deze maand", color: "#A7DADC" },
           { icon: <Star size={16} />, val: "4.9", label: "Rating", color: "#EF476F" },
         ].map((s, i) => (
-          <div key={i} className="p-3 rounded-xl text-center"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div key={i} className="p-3 rounded-xl text-center bg-surface border border-border">
             <div className="flex items-center justify-center mb-1" style={{ color: s.color }}>{s.icon}</div>
-            <div className="text-lg font-black text-white">{s.val}</div>
-            <div className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>{s.label}</div>
+            <div className="text-lg font-black text-foreground">{s.val}</div>
+            <div className="text-[10px] text-foreground-subtle">{s.label}</div>
           </div>
         ))}
       </motion.div>
@@ -44,28 +42,23 @@ export default function WorkerDashboard() {
       {/* Upcoming shifts */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider">Aankomende Shifts</h2>
+          <h2 className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Aankomende Shifts</h2>
           <Link href="/shifts" className="text-xs font-semibold" style={{ color: "#EF476F" }}>Alle shifts →</Link>
         </div>
         <div className="space-y-3">
           {upcomingShifts.map((shift) => (
             <Link key={shift.id} href={`/shifts/${shift.id}`}>
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-                className="flex items-center gap-3 p-4 rounded-xl"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <motion.div whileTap={{ scale: 0.99 }}
+                className="flex items-center gap-3 p-4 rounded-xl bg-surface border border-border">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold"
-                  style={{ background: shift.color }}>
-                  {shift.title[0]}
-                </div>
+                  style={{ background: shift.color }}>{shift.title[0]}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-semibold text-sm">{shift.title}</div>
-                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                    {shift.company} · {shift.date}, {shift.time}
-                  </div>
+                  <div className="text-foreground font-semibold text-sm">{shift.title}</div>
+                  <div className="text-xs text-foreground-subtle">{shift.company} · {shift.date}, {shift.time}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-bold" style={{ color: "#A7DADC" }}>{shift.rate}</div>
-                  <div className="text-[10px] flex items-center gap-1 justify-end" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  <div className="text-[10px] flex items-center gap-1 justify-end text-foreground-subtle">
                     <MapPin size={10} />{shift.location}
                   </div>
                 </div>
@@ -79,26 +72,23 @@ export default function WorkerDashboard() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
         <div className="flex items-center gap-2 mb-3">
           <Zap size={14} style={{ color: "#EF476F" }} />
-          <h2 className="text-sm font-bold text-white/60 uppercase tracking-wider">Aanbevolen voor jou</h2>
+          <h2 className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Aanbevolen voor jou</h2>
         </div>
         <div className="space-y-2">
           {recommended.map((shift) => (
             <Link key={shift.id} href={`/shifts/${shift.id}`}>
               <motion.div whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-3 p-3 rounded-xl"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                className="flex items-center gap-3 p-3.5 rounded-xl bg-surface border border-border">
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-medium text-sm">{shift.title}</div>
-                  <div className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-                    {shift.company} · {shift.date}, {shift.time}
-                  </div>
+                  <div className="text-foreground font-medium text-sm">{shift.title}</div>
+                  <div className="text-xs text-foreground-subtle">{shift.company} · {shift.date}, {shift.time}</div>
                 </div>
                 <div className="text-right flex items-center gap-2">
                   <span className="text-xs px-2 py-0.5 rounded-full font-bold"
-                    style={{ background: "rgba(167,218,220,0.1)", color: "#A7DADC" }}>
+                    style={{ background: "rgba(167,218,220,0.12)", color: "#0e8a8d" }}>
                     {shift.match}% match
                   </span>
-                  <span className="text-sm font-bold text-white/70">{shift.rate}</span>
+                  <span className="text-sm font-bold text-foreground-muted">{shift.rate}</span>
                 </div>
               </motion.div>
             </Link>
@@ -110,13 +100,13 @@ export default function WorkerDashboard() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
         <Link href="/shifts">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-between p-4 rounded-2xl"
+            className="flex items-center justify-between p-5 rounded-2xl text-white"
             style={{ background: "linear-gradient(135deg, #EF476F, #D93A5E)" }}>
             <div>
-              <div className="text-white font-bold">Zoek nieuwe shifts</div>
-              <div className="text-xs text-white/60">1.500+ shifts beschikbaar</div>
+              <div className="font-bold">Zoek nieuwe shifts</div>
+              <div className="text-xs text-white/70">1.500+ shifts beschikbaar</div>
             </div>
-            <ArrowRight size={20} className="text-white" />
+            <ArrowRight size={20} />
           </motion.div>
         </Link>
       </motion.div>
