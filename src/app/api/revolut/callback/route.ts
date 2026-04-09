@@ -38,7 +38,7 @@ export async function GET(req: Request) {
       .setIssuedAt()
       .setIssuer("workwings.vercel.app")
       .setSubject(clientId)
-      .setAudience(authUrl)
+      .setAudience("https://revolut.com")
       .setExpirationTime("2m")
       .sign(privateKey);
 

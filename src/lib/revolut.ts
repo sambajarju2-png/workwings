@@ -29,7 +29,7 @@ async function signJWT(): Promise<string> {
   return new SignJWT({})
     .setProtectedHeader({ alg: "RS256", typ: "JWT" })
     .setIssuedAt().setIssuer("workwings.vercel.app").setSubject(clientId)
-    .setAudience(authUrl).setExpirationTime("2m")
+    .setAudience("https://revolut.com").setExpirationTime("2m")
     .sign(privateKey);
 }
 
