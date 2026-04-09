@@ -1,0 +1,21 @@
+{
+  "name": "WorkWings",
+  "short_name": "WorkWings",
+  "description": "Vind flexibele shifts in horeca, retail, logistiek en events. Direct betaald.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0A1628",
+  "theme_color": "#023047",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "lang": "nl",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Shifts Zoeken", "url": "/shifts", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mijn Profiel", "url": "/profile", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

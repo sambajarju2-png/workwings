@@ -11,10 +11,12 @@ import { Testimonials } from "@/components/testimonials";
 import { CTA } from "@/components/cta";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import { JsonLd } from "@/components/json-ld";
 
 export default function Home() {
   return (
     <main className="overflow-x-hidden">
+      <JsonLd />
       <Navbar />
       <Hero />
       <LogoMarquee />

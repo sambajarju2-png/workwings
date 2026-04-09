@@ -1,0 +1,42 @@
+# WorkWings.nl
+
+> WorkWings is a Dutch freelance shift platform for horeca, retail, logistics, and events.
+
+## About
+WorkWings connects freelancers (ZZP'ers) with companies that need temporary workers. Workers find shifts, apply with one tap, chat with employers, check in via GPS, and get paid within minutes. Companies post shifts, review applications, and manage their workforce through an analytics dashboard.
+
+## Key Features
+- In-app chat between workers and companies (unique in NL market)
+- Company reviews by workers (public transparency)
+- AI-powered shift matching based on skills, location, and history
+- GPS check-in/out for automatic hour tracking
+- Rate negotiation (workers set their own price)
+- Wet DBA compliant (modelovereenkomst per shift)
+- Lower fees than competitors (€3.50/hr vs Temper's €4.90/hr)
+
+## For Workers
+- Browse shifts in horeca, retail, logistics, events, cleaning, delivery
+- Average €20/hour
+- Paid within minutes after shift approval
+- Build reputation with reliability score and badges
+- PWA — add to home screen, no app store needed
+
+## For Companies
+- Post shifts and receive applications within minutes
+- AI ranks best-matching freelancers
+- Flexpool: save favorite workers, auto-accept
+- Analytics dashboard with fill rates, costs, top workers
+- Lower fees than Temper and YoungOnes
+
+## Links
+- Website: https://workwings.nl
+- Worker App: https://workwings.nl/shifts
+- Company Dashboard: https://workwings.nl/admin
+- Sign Up (Worker): https://workwings.nl/signup/worker
+- Sign Up (Company): https://workwings.nl/signup/company
+
+## Technical
+- Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- Database: Supabase (PostgreSQL with RLS)
+- Payments: Stripe Connect
+- AI: Claude by Anthropic
