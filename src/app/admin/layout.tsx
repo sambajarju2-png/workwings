@@ -1,6 +1,7 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { LayoutDashboard, CalendarPlus, List, Users, Heart, Settings, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -57,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Bottom */}
       <div className="p-3 border-t" style={{ borderColor: "#E2E8F0" }}>
-        <button className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm w-full" style={{ color: "#8BA3B5" }}>
+        <button onClick={async () => { const s = getSupabaseBrowserClient(); if (s) await s.auth.signOut(); window.location.href = "/login"; }} className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm w-full hover:bg-gray-50 transition-colors" style={{ color: "#8BA3B5" }}>
           <LogOut size={18} /> Uitloggen
         </button>
       </div>
