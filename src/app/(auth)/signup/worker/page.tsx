@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowLeft, Loader2, CheckCircle, User, MapPin, Mail, Lock, Phone, Hash, AlertTriangle } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2, CheckCircle, User, MapPin, Mail, Lock, Hash, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
@@ -31,39 +31,27 @@ export default function WorkerSignupPage() {
   async function handleGoogleSignup() {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/callback?type=worker` },
-    });
-  }
-
-  async function handleStep1() {
-    setLoading(true); setError("");
-    const supabase = getSupabaseBrowserClient();
-    if (!supabase) { setError("Niet geconfigureerd"); setLoading(false); return; }
-    const { error: authError } = await supabase.auth.signUp({ email, password, options: { data: { role: "worker" } } });
-    if (authError) { setError(authError.message); setLoading(false); return; }
-    setLoading(false); setStep(2);
+    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/callback?type=worker` } });
   }
 
   async function handleComplete() {
     setLoading(true); setError("");
-    const supabase = getSupabaseBrowserClient();
-    if (!supabase) { setError("Niet geconfigureerd"); setLoading(false); return; }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setError("Niet ingelogd"); setLoading(false); return; }
 
-    const { error: dbError } = await supabase.from("workers").insert({
-      id: user.id, email: user.email || email,
-      first_name: firstName, last_name: lastName,
-      city, phone: phone || null,
-      btw_number: btwNumber || null, kvk_number: kvkNumber || null,
-      sectors: selectedSectors, status: "active", payout_preference: "normal",
-      shifts_without_btw: 0, btw_restricted: false,
+    const res = await fetch("/api/auth/register-worker", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, firstName, lastName, city, phone, btwNumber, kvkNumber, sectors: selectedSectors }),
     });
 
-    if (dbError) { setError(dbError.message); setLoading(false); return; }
-    setLoading(false); router.push("/shifts");
+    const data = await res.json();
+    if (!res.ok) { setError(data.error || "Registratie mislukt"); setLoading(false); return; }
+
+    // Sign in
+    const supabase = getSupabaseBrowserClient();
+    if (supabase) await supabase.auth.signInWithPassword({ email, password });
+
+    setLoading(false);
+    router.push("/shifts");
   }
 
   const input = "w-full pl-12 pr-4 py-3.5 rounded-xl text-sm text-foreground bg-surface border border-border outline-none";
@@ -71,24 +59,12 @@ export default function WorkerSignupPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="max-w-sm mx-auto">
-        <Link href="/signup" className="inline-flex items-center gap-1 text-sm font-medium text-foreground-subtle mb-6">
-          <ArrowLeft size={16} /> Terug
-        </Link>
-
-        <div className="flex gap-2 mb-8">
-          {[1, 2, 3].map(s => <div key={s} className="flex-1 h-1.5 rounded-full" style={{ background: step >= s ? "#EF476F" : "var(--color-border)" }} />)}
-        </div>
-
-        <h1 className="text-2xl font-black text-foreground mb-1">
-          {step === 1 ? "Account aanmaken" : step === 2 ? "Over jou" : "Bijna klaar"}
-        </h1>
-        <p className="text-sm text-foreground-subtle mb-6">
-          {step === 1 ? "Registreer met Google of e-mail" : step === 2 ? "Vul je gegevens aan" : "Kies je sectoren en start"}
-        </p>
-
+        <Link href="/signup" className="inline-flex items-center gap-1 text-sm font-medium text-foreground-subtle mb-6"><ArrowLeft size={16} /> Terug</Link>
+        <div className="flex gap-2 mb-8">{[1, 2, 3].map(s => <div key={s} className="flex-1 h-1.5 rounded-full" style={{ background: step >= s ? "#EF476F" : "var(--color-border)" }} />)}</div>
+        <h1 className="text-2xl font-black text-foreground mb-1">{step === 1 ? "Account aanmaken" : step === 2 ? "Over jou" : "Bijna klaar"}</h1>
+        <p className="text-sm text-foreground-subtle mb-6">{step === 1 ? "Registreer met Google of e-mail" : step === 2 ? "Vul je gegevens aan" : "Kies je sectoren en start"}</p>
         {error && <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg mb-4">{error}</div>}
 
-        {/* Step 1: Account */}
         {step === 1 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
             <button onClick={handleGoogleSignup} className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-3 bg-surface border border-border text-foreground">
@@ -98,14 +74,13 @@ export default function WorkerSignupPage() {
             <div className="flex items-center gap-3"><div className="flex-1 h-px bg-border" /><span className="text-xs text-foreground-subtle">of met e-mail</span><div className="flex-1 h-px bg-border" /></div>
             <div className="relative"><Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="E-mailadres" className={input} /></div>
             <div className="relative"><Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Wachtwoord (min. 6 tekens)" className={input} /></div>
-            <motion.button onClick={handleStep1} disabled={loading || !email || !password} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            <motion.button onClick={() => { if (email && password.length >= 6) setStep(2); else setError("Vul een geldig e-mailadres en wachtwoord in (min. 6 tekens)"); }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               className="w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: "linear-gradient(135deg, #EF476F, #D93A5E)" }}>
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Doorgaan <ArrowRight size={16} /></>}
+              Doorgaan <ArrowRight size={16} />
             </motion.button>
           </motion.div>
         )}
 
-        {/* Step 2: Personal info + BTW/KVK */}
         {step === 2 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -113,43 +88,28 @@ export default function WorkerSignupPage() {
               <div className="relative"><User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Achternaam" className={input} /></div>
             </div>
             <div className="relative"><MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={city} onChange={e => setCity(e.target.value)} placeholder="Stad" className={input} /></div>
-            <div className="relative"><Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Telefoonnummer (optioneel)" className={input} /></div>
-
-            {/* BTW question */}
+            <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Telefoonnummer (optioneel)" className="w-full px-4 py-3.5 rounded-xl text-sm text-foreground bg-surface border border-border outline-none" />
             <div className="pt-2">
               <p className="text-sm font-semibold text-foreground mb-2">Heb je al een BTW-nummer?</p>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setHasBtw(true)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all"
-                  style={{ background: hasBtw === true ? "rgba(239,71,111,0.06)" : "var(--color-surface)", borderColor: hasBtw === true ? "#EF476F" : "var(--color-border)", color: hasBtw === true ? "#EF476F" : "var(--color-foreground-muted)" }}>
-                  Ja
-                </button>
-                <button type="button" onClick={() => setHasBtw(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all"
-                  style={{ background: hasBtw === false ? "rgba(167,218,220,0.1)" : "var(--color-surface)", borderColor: hasBtw === false ? "#A7DADC" : "var(--color-border)", color: hasBtw === false ? "#0e8a8d" : "var(--color-foreground-muted)" }}>
-                  Nog niet
-                </button>
+                {([true, false] as const).map(v => (
+                  <button key={String(v)} type="button" onClick={() => setHasBtw(v)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all"
+                    style={{ background: hasBtw === v ? (v ? "rgba(239,71,111,0.06)" : "rgba(167,218,220,0.1)") : "var(--color-surface)", borderColor: hasBtw === v ? (v ? "#EF476F" : "#A7DADC") : "var(--color-border)", color: hasBtw === v ? (v ? "#EF476F" : "#0e8a8d") : "var(--color-foreground-muted)" }}>
+                    {v ? "Ja" : "Nog niet"}
+                  </button>
+                ))}
               </div>
             </div>
-
-            {hasBtw === true && (
-              <div className="relative"><Hash size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={btwNumber} onChange={e => setBtwNumber(e.target.value)} placeholder="NL123456789B01" className={input} /></div>
-            )}
-            {hasBtw === false && (
-              <div className="p-3 rounded-xl text-xs leading-relaxed flex gap-2" style={{ background: "rgba(167,218,220,0.08)", color: "#0e8a8d" }}>
-                <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
-                <span>Geen probleem! Je kunt <strong>3 shifts</strong> werken zonder BTW-nummer. Daarna moet je er een aanvragen bij de Belastingdienst.</span>
-              </div>
-            )}
-
+            {hasBtw === true && <div className="relative"><Hash size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={btwNumber} onChange={e => setBtwNumber(e.target.value)} placeholder="NL123456789B01" className={input} /></div>}
+            {hasBtw === false && <div className="p-3 rounded-xl text-xs leading-relaxed flex gap-2" style={{ background: "rgba(167,218,220,0.08)", color: "#0e8a8d" }}><AlertTriangle size={14} className="flex-shrink-0 mt-0.5" /><span>Geen probleem! Je kunt <strong>3 shifts</strong> werken zonder BTW-nummer.</span></div>}
             <div className="relative"><Hash size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-subtle" /><input value={kvkNumber} onChange={e => setKvkNumber(e.target.value)} placeholder="KVK-nummer (optioneel)" className={input} /></div>
-
-            <motion.button onClick={() => setStep(3)} disabled={!firstName || !lastName || !city || hasBtw === null} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            <motion.button onClick={() => { if (firstName && lastName && city && hasBtw !== null) setStep(3); else setError("Vul alle verplichte velden in"); }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               className="w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: "linear-gradient(135deg, #EF476F, #D93A5E)" }}>
               Doorgaan <ArrowRight size={16} />
             </motion.button>
           </motion.div>
         )}
 
-        {/* Step 3: Sectors */}
         {step === 3 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -157,8 +117,7 @@ export default function WorkerSignupPage() {
                 <button key={s.value} onClick={() => setSelectedSectors(prev => prev.includes(s.value) ? prev.filter(x => x !== s.value) : [...prev, s.value])}
                   className="p-4 rounded-xl text-sm font-semibold text-left border transition-all"
                   style={{ background: selectedSectors.includes(s.value) ? "rgba(239,71,111,0.06)" : "var(--color-surface)", borderColor: selectedSectors.includes(s.value) ? "#EF476F" : "var(--color-border)", color: selectedSectors.includes(s.value) ? "#EF476F" : "var(--color-foreground-muted)" }}>
-                  {selectedSectors.includes(s.value) && <CheckCircle size={14} style={{ color: "#EF476F" }} className="mb-1" />}
-                  {s.label}
+                  {selectedSectors.includes(s.value) && <CheckCircle size={14} style={{ color: "#EF476F" }} className="mb-1" />}{s.label}
                 </button>
               ))}
             </div>
@@ -169,9 +128,7 @@ export default function WorkerSignupPage() {
           </motion.div>
         )}
 
-        <p className="text-center text-sm text-foreground-subtle mt-6">
-          Al een account? <Link href="/login" className="font-bold" style={{ color: "#EF476F" }}>Inloggen</Link>
-        </p>
+        <p className="text-center text-sm text-foreground-subtle mt-6">Al een account? <Link href="/login" className="font-bold" style={{ color: "#EF476F" }}>Inloggen</Link></p>
       </div>
     </div>
   );
