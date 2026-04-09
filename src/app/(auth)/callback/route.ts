@@ -2,45 +2,29 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export const dynamic = "force-dynamic";
-
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const type = searchParams.get("type") || "worker";
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY) {
-    return NextResponse.redirect(`${origin}/login?error=not_configured`);
-  }
+  if (!code) return NextResponse.redirect(new URL("/login", req.url));
 
-  if (code) {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Ignored
-            }
-          },
-        },
-      }
-    );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return NextResponse.redirect(new URL("/login", req.url));
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${redirect}`);
-    }
-  }
+  const cookieStore = await cookies();
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() { return cookieStore.getAll(); },
+      setAll(cookiesToSet) {
+        try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); } catch {}
+      },
+    },
+  });
 
-  return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) return NextResponse.redirect(new URL("/login?error=auth_failed", req.url));
+
+  return NextResponse.redirect(new URL(type === "company" ? "/admin" : "/shifts", req.url));
 }
