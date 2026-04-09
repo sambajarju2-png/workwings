@@ -1,64 +1,91 @@
 "use client";
-import { motion } from "framer-motion";
-import { Check, X, Star, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, X, Star, Loader2, Clock, User } from "lucide-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
-const applications = [
-  { id:"1", worker:"Lisa V.", rating:4.9, shifts:24, shift:"Barista ochtend", rate:"€22/uur", proposed:"€22/uur", time:"Vandaag, 08:00" },
-  { id:"2", worker:"Kevin M.", rating:4.7, shifts:12, shift:"Warehouse avond", rate:"€19/uur", proposed:"€21/uur", time:"Vandaag, 18:00" },
-  { id:"3", worker:"Priya D.", rating:4.8, shifts:36, shift:"Event crew", rate:"€24/uur", proposed:"€24/uur", time:"Morgen, 14:00" },
-  { id:"4", worker:"Jan B.", rating:4.2, shifts:5, shift:"Kassamedewerker", rate:"€18/uur", proposed:"€20/uur", time:"Za, 10:00" },
-  { id:"5", worker:"Sanne K.", rating:4.6, shifts:18, shift:"Barista ochtend", rate:"€22/uur", proposed:"€22/uur", time:"Vandaag, 08:00" },
-];
+export default function AdminApplicationsPage() {
+  const [apps, setApps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function ApplicationsPage() {
+  useEffect(() => {
+    async function load() {
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) { setLoading(false); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data: membership } = await supabase.from("company_members").select("company_id").eq("user_id", user.id).single();
+      if (!membership) { setLoading(false); return; }
+
+      const { data: shifts } = await supabase.from("shifts").select("id").eq("company_id", membership.company_id);
+      const shiftIds = (shifts || []).map((s: any) => s.id);
+      if (!shiftIds.length) { setApps([]); setLoading(false); return; }
+
+      const { data } = await supabase.from("applications")
+        .select("*, workers(first_name, last_name, rating_avg, total_shifts, city, sectors), shifts(title, date, rate_per_hour)")
+        .in("shift_id", shiftIds).order("applied_at", { ascending: false });
+      setApps(data || []);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  async function handleAction(id: string, status: "accepted" | "rejected") {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    const update: any = { status };
+    if (status === "accepted") update.accepted_at = new Date().toISOString();
+    if (status === "rejected") update.rejected_at = new Date().toISOString();
+    await supabase.from("applications").update(update).eq("id", id);
+    setApps(prev => prev.map(a => a.id === id ? { ...a, ...update } : a));
+  }
+
+  if (loading) return <div className="p-10 flex justify-center"><Loader2 size={24} className="animate-spin" style={{ color: "#8BA3B5" }} /></div>;
+
   return (
-    <div className="p-6 lg:p-10 max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-black" style={{color:"#023047"}}>Sollicitaties</h1>
-        <p className="text-sm mt-1" style={{color:"#8BA3B5"}}>{applications.length} openstaande sollicitaties</p>
-      </div>
-      <div className="space-y-3">
-        {applications.map((a,i)=>(
-          <motion.div key={a.id} initial={{opacity:0,y:15}} animate={{opacity:1,y:0}} transition={{delay:i*0.05}}
-            className="bg-white p-5 rounded-2xl border flex items-center gap-4" style={{borderColor:"#E8EDF2"}}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-              style={{background:"linear-gradient(135deg, #EF476F, #D93A5E)"}}>
-              {a.worker.split(" ").map(w=>w[0]).join("")}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm" style={{color:"#023047"}}>{a.worker}</span>
-                <span className="flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full font-bold"
-                  style={{background:"rgba(239,71,111,0.08)",color:"#EF476F"}}>
-                  <Star size={8} fill="#EF476F"/>{a.rating}
-                </span>
-                <span className="text-[10px]" style={{color:"#8BA3B5"}}>{a.shifts} shifts</span>
-              </div>
-              <div className="text-xs mt-1" style={{color:"#8BA3B5"}}>
-                {a.shift} · <Clock size={10} className="inline"/> {a.time}
-              </div>
-              {a.proposed !== a.rate && (
-                <div className="text-[10px] mt-1.5 px-2 py-0.5 rounded-full inline-block font-semibold"
-                  style={{background:"rgba(239,71,111,0.06)",color:"#EF476F"}}>
-                  Biedt {a.proposed} (shift: {a.rate})
+    <div className="p-6 lg:p-10 max-w-6xl">
+      <h1 className="text-2xl font-black mb-6" style={{ color: "#023047" }}>Sollicitaties</h1>
+
+      {apps.length === 0 ? (
+        <div className="bg-white rounded-xl border p-10 text-center" style={{ borderColor: "#E8EDF2" }}>
+          <User size={32} style={{ color: "#E8EDF2" }} className="mx-auto mb-3" />
+          <p className="text-sm" style={{ color: "#8BA3B5" }}>Nog geen sollicitaties</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {apps.map((a: any) => (
+            <div key={a.id} className="bg-white rounded-xl border p-5 flex items-center justify-between" style={{ borderColor: "#E8EDF2" }}>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: "#023047" }}>
+                  {a.workers?.first_name?.[0]}{a.workers?.last_name?.[0]}
                 </div>
-              )}
+                <div>
+                  <div className="font-semibold text-sm" style={{ color: "#023047" }}>{a.workers?.first_name} {a.workers?.last_name}</div>
+                  <div className="text-xs" style={{ color: "#8BA3B5" }}>
+                    {a.shifts?.title} · {a.shifts?.date} · {a.workers?.city || ""} · {a.workers?.total_shifts || 0} shifts
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 ml-4">
+                  <Star size={12} style={{ color: "#EF476F" }} fill="#EF476F" />
+                  <span className="text-xs font-semibold" style={{ color: "#023047" }}>{Number(a.workers?.rating_avg || 0).toFixed(1)}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {a.status === "pending" ? (
+                  <>
+                    <button onClick={() => handleAction(a.id, "accepted")} className="p-2 rounded-lg text-white" style={{ background: "#0e8a8d" }}><Check size={16} /></button>
+                    <button onClick={() => handleAction(a.id, "rejected")} className="p-2 rounded-lg border" style={{ borderColor: "#E8EDF2", color: "#8BA3B5" }}><X size={16} /></button>
+                  </>
+                ) : (
+                  <span className="text-xs px-3 py-1 rounded-full font-semibold"
+                    style={{ background: a.status === "accepted" ? "rgba(167,218,220,0.12)" : "rgba(239,71,111,0.08)", color: a.status === "accepted" ? "#0e8a8d" : "#EF476F" }}>
+                    {a.status === "accepted" ? "Geaccepteerd" : "Afgewezen"}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex gap-2 flex-shrink-0">
-              <motion.button whileHover={{scale:1.1}} whileTap={{scale:0.9}}
-                className="w-10 h-10 rounded-xl flex items-center justify-center border"
-                style={{background:"rgba(167,218,220,0.08)",borderColor:"#A7DADC",color:"#0e8a8d"}}>
-                <Check size={18}/>
-              </motion.button>
-              <motion.button whileHover={{scale:1.1}} whileTap={{scale:0.9}}
-                className="w-10 h-10 rounded-xl flex items-center justify-center border"
-                style={{background:"#F7F9FC",borderColor:"#E8EDF2",color:"#8BA3B5"}}>
-                <X size={18}/>
-              </motion.button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

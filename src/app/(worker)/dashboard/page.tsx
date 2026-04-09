@@ -1,115 +1,89 @@
 "use client";
-import { motion } from "framer-motion";
-import { Clock, MapPin, TrendingUp, Star, ArrowRight, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { TrendingUp, CalendarDays, Clock, Star, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
-
-const upcomingShifts = [
-  { id: "1", title: "Barista", company: "Coffee Company", time: "08:00 – 16:00", date: "Morgen", rate: "€22/uur", location: "Amsterdam", color: "#EF476F" },
-  { id: "2", title: "Orderpicker", company: "DHL Warehouse", time: "18:00 – 02:00", date: "Vrijdag", rate: "€19/uur", location: "Schiphol", color: "#A7DADC" },
-];
-
-const recommended = [
-  { id: "3", title: "Eventhost", company: "RAI Amsterdam", rate: "€24/uur", time: "14:00 – 22:00", date: "Zaterdag", match: 95 },
-  { id: "4", title: "Retail medewerker", company: "Uniqlo", rate: "€18/uur", time: "10:00 – 18:00", date: "Zondag", match: 88 },
-  { id: "5", title: "Afwasser", company: "Hotel Okura", rate: "€20/uur", time: "17:00 – 01:00", date: "Maandag", match: 82 },
-];
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 export default function WorkerDashboard() {
-  return (
-    <div className="px-4 py-6 space-y-6">
-      {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-black text-foreground">Hey daar!</h1>
-        <p className="text-sm mt-1 text-foreground-subtle">Klaar voor je volgende shift?</p>
-      </motion.div>
+  const [worker, setWorker] = useState<any>(null);
+  const [upcoming, setUpcoming] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-      {/* Quick stats */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="grid grid-cols-3 gap-3">
+  useEffect(() => {
+    async function load() {
+      const supabase = getSupabaseBrowserClient();
+      if (!supabase) { setLoading(false); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data: w } = await supabase.from("workers").select("*").eq("id", user.id).single();
+      setWorker(w);
+
+      // Get accepted applications with shift details
+      const { data: apps } = await supabase.from("applications")
+        .select("*, shifts(title, date, start_time, end_time, rate_per_hour, companies(name), locations(city))")
+        .eq("worker_id", user.id).eq("status", "accepted").order("applied_at", { ascending: false }).limit(5);
+      setUpcoming(apps || []);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  if (loading) return <div className="p-6 flex justify-center pt-20"><Loader2 size={24} className="animate-spin" style={{ color: "#8BA3B5" }} /></div>;
+
+  const name = worker ? worker.first_name : "daar";
+
+  return (
+    <div className="p-4 pb-24">
+      <h1 className="text-xl font-black text-foreground mb-1">Hey {name}</h1>
+      <p className="text-sm text-foreground-subtle mb-6">Welkom bij WorkWings</p>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
         {[
-          { icon: <Clock size={16} />, val: "24", label: "Shifts", color: "#EF476F" },
-          { icon: <TrendingUp size={16} />, val: "€480", label: "Deze maand", color: "#A7DADC" },
-          { icon: <Star size={16} />, val: "4.9", label: "Rating", color: "#EF476F" },
+          { val: worker?.total_shifts || 0, label: "Shifts", icon: <CalendarDays size={14} /> },
+          { val: `${Number(worker?.total_hours || 0).toFixed(0)}u`, label: "Uren", icon: <Clock size={14} /> },
+          { val: Number(worker?.rating_avg || 0).toFixed(1), label: "Rating", icon: <Star size={14} /> },
         ].map((s, i) => (
-          <div key={i} className="p-3 rounded-xl text-center bg-surface border border-border">
-            <div className="flex items-center justify-center mb-1" style={{ color: s.color }}>{s.icon}</div>
+          <div key={i} className="bg-surface rounded-xl p-3 border border-border text-center">
+            <div className="flex justify-center mb-1 text-foreground-subtle">{s.icon}</div>
             <div className="text-lg font-black text-foreground">{s.val}</div>
-            <div className="text-[10px] text-foreground-subtle">{s.label}</div>
+            <div className="text-xs text-foreground-subtle">{s.label}</div>
           </div>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Upcoming shifts */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Aankomende Shifts</h2>
-          <Link href="/shifts" className="text-xs font-semibold" style={{ color: "#EF476F" }}>Alle shifts →</Link>
+      {/* BTW warning */}
+      {worker && !worker.btw_number && (worker.shifts_without_btw || 0) > 0 && (
+        <div className="p-3 rounded-xl mb-4 text-xs" style={{ background: "rgba(239,71,111,0.06)", color: "#EF476F" }}>
+          Je hebt nog <strong>{3 - (worker.shifts_without_btw || 0)} shifts</strong> zonder BTW-nummer. Voeg je BTW-nummer toe in je profiel.
         </div>
-        <div className="space-y-3">
-          {upcomingShifts.map((shift) => (
-            <Link key={shift.id} href={`/shifts/${shift.id}`}>
-              <motion.div whileTap={{ scale: 0.99 }}
-                className="flex items-center gap-3 p-4 rounded-xl bg-surface border border-border">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold"
-                  style={{ background: shift.color }}>{shift.title[0]}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-foreground font-semibold text-sm">{shift.title}</div>
-                  <div className="text-xs text-foreground-subtle">{shift.company} · {shift.date}, {shift.time}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold" style={{ color: "#A7DADC" }}>{shift.rate}</div>
-                  <div className="text-[10px] flex items-center gap-1 justify-end text-foreground-subtle">
-                    <MapPin size={10} />{shift.location}
-                  </div>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* AI Recommended */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Zap size={14} style={{ color: "#EF476F" }} />
-          <h2 className="text-xs font-bold text-foreground-muted uppercase tracking-wider">Aanbevolen voor jou</h2>
-        </div>
-        <div className="space-y-2">
-          {recommended.map((shift) => (
-            <Link key={shift.id} href={`/shifts/${shift.id}`}>
-              <motion.div whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-3 p-3.5 rounded-xl bg-surface border border-border">
-                <div className="flex-1 min-w-0">
-                  <div className="text-foreground font-medium text-sm">{shift.title}</div>
-                  <div className="text-xs text-foreground-subtle">{shift.company} · {shift.date}, {shift.time}</div>
-                </div>
-                <div className="text-right flex items-center gap-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full font-bold"
-                    style={{ background: "rgba(167,218,220,0.12)", color: "#0e8a8d" }}>
-                    {shift.match}% match
-                  </span>
-                  <span className="text-sm font-bold text-foreground-muted">{shift.rate}</span>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
-      </motion.div>
+      )}
 
       {/* Quick action */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <Link href="/shifts">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="flex items-center justify-between p-5 rounded-2xl text-white"
-            style={{ background: "linear-gradient(135deg, #EF476F, #D93A5E)" }}>
-            <div>
-              <div className="font-bold">Zoek nieuwe shifts</div>
-              <div className="text-xs text-white/70">1.500+ shifts beschikbaar</div>
-            </div>
-            <ArrowRight size={20} />
-          </motion.div>
-        </Link>
-      </motion.div>
+      <Link href="/shifts" className="block w-full p-4 rounded-xl text-white font-bold text-center mb-6" style={{ background: "linear-gradient(135deg, #EF476F, #D93A5E)" }}>
+        Shifts bekijken <ArrowRight size={16} className="inline ml-1" />
+      </Link>
+
+      {/* Upcoming shifts */}
+      <h2 className="text-sm font-bold text-foreground mb-3">Aankomende shifts</h2>
+      {upcoming.length === 0 ? (
+        <div className="bg-surface rounded-xl border border-border p-6 text-center">
+          <p className="text-sm text-foreground-subtle">Nog geen shifts gepland</p>
+          <Link href="/shifts" className="text-xs font-bold mt-2 inline-block" style={{ color: "#EF476F" }}>Bekijk beschikbare shifts</Link>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {upcoming.map((a: any) => (
+            <Link key={a.id} href={`/shifts/${a.shifts?.id || a.shift_id}`} className="block bg-surface rounded-xl border border-border p-4">
+              <div className="font-semibold text-sm text-foreground">{a.shifts?.title}</div>
+              <div className="text-xs text-foreground-subtle mt-1">
+                {a.shifts?.companies?.name} · {a.shifts?.locations?.city} · {a.shifts?.date} · {a.shifts?.start_time?.slice(0, 5)}-{a.shifts?.end_time?.slice(0, 5)}
+              </div>
+              <div className="text-xs font-bold mt-1" style={{ color: "#EF476F" }}>€{Number(a.shifts?.rate_per_hour || 0).toFixed(0)}/uur</div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
