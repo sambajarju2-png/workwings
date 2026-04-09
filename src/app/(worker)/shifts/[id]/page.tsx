@@ -18,7 +18,7 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     async function load() {
       const res = await fetch(`/api/shifts/${id}`);
-      if (res.ok) { const data = await res.json(); setShift(data); }
+      if (res.ok) { const data = await res.json(); setShift(data.shift || data); }
 
       const supabase = getSupabaseBrowserClient();
       if (supabase) {
@@ -42,7 +42,7 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
 
     const { error } = await supabase.from("applications").insert({
       shift_id: id, worker_id: userId, status: "pending",
-      proposed_rate: shift?.rate_per_hour,
+      proposed_rate: Number(shift?.rate_per_hour) || 0,
     });
 
     if (!error) setApplied(true);
@@ -52,10 +52,11 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
   if (loading) return <div className="p-6 flex justify-center pt-20"><Loader2 size={24} className="animate-spin text-foreground-subtle" /></div>;
   if (!shift) return <div className="p-6 text-center text-foreground-subtle">Shift niet gevonden</div>;
 
-  const hours = shift.start_time && shift.end_time ? (
-    (parseInt(shift.end_time) - parseInt(shift.start_time)) || 8
-  ) : 8;
-  const estimated = (Number(shift.rate_per_hour) * hours).toFixed(0);
+  const startH = shift.start_time ? parseInt(shift.start_time.split(":")[0]) : 9;
+  const endH = shift.end_time ? parseInt(shift.end_time.split(":")[0]) : 17;
+  const hours = endH > startH ? endH - startH : (24 - startH + endH);
+  const rate = Number(shift.rate_per_hour) || 0;
+  const estimated = (rate * hours).toFixed(0);
 
   return (
     <div className="pb-24 bg-background min-h-screen">
@@ -87,7 +88,7 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
           </div>
           <div className="border-t border-border pt-3 flex items-center justify-between">
             <span className="text-xs text-foreground-subtle">{shift.workers_filled}/{shift.workers_needed} plekken</span>
-            <div><span className="text-2xl font-black" style={{ color: "#EF476F" }}>€ {Number(shift.rate_per_hour).toFixed(2).replace(".", ",")}</span><span className="text-sm text-foreground-muted">/uur</span></div>
+            <div><span className="text-2xl font-black" style={{ color: "#EF476F" }}>€ {rate.toFixed(2).replace(".", ",")}</span><span className="text-sm text-foreground-muted">/uur</span></div>
           </div>
         </div>
       </div>
@@ -147,7 +148,7 @@ export default function ShiftDetailPage({ params }: { params: Promise<{ id: stri
       {/* Sticky apply bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 flex items-center justify-between z-50 safe-area-bottom">
         <div>
-          <span className="text-lg font-black" style={{ color: "#EF476F" }}>€{Number(shift.rate_per_hour).toFixed(2).replace(".", ",")}</span>
+          <span className="text-lg font-black" style={{ color: "#EF476F" }}>€{rate.toFixed(2).replace(".", ",")}</span>
           <span className="text-xs text-foreground-muted">/uur</span>
         </div>
         <button onClick={handleApply} disabled={applying || applied}
