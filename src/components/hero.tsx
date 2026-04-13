@@ -16,14 +16,10 @@ export function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ background: "linear-gradient(135deg, #023047 0%, #012A3E 40%, #0A1628 100%)" }}>
       
-      {/* Animated orbs */}
+      {/* Subtle ambient glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full animate-float"
-          style={{ background: "radial-gradient(circle, rgba(239,71,111,0.15) 0%, transparent 70%)" }} />
-        <div className="absolute -bottom-60 -left-40 w-[500px] h-[500px] rounded-full animate-float"
-          style={{ background: "radial-gradient(circle, rgba(167,218,220,0.12) 0%, transparent 70%)", animationDelay: "3s" }} />
-        <div className="absolute top-1/3 left-1/2 w-[300px] h-[300px] rounded-full animate-float"
-          style={{ background: "radial-gradient(circle, rgba(239,71,111,0.08) 0%, transparent 70%)", animationDelay: "1.5s" }} />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(239,71,111,0.08) 0%, transparent 70%)" }} />
       </div>
 
       {/* Grid pattern overlay */}
@@ -41,7 +37,7 @@ export function Hero() {
         >
           <Zap size={14} style={{ color: "#EF476F" }} />
           <span className="text-sm font-semibold" style={{ color: "#EF476F" }}>
-            #1 Freelance Shift Platform van Nederland
+            Nieuw freelance shift platform
           </span>
         </motion.div>
 
@@ -63,16 +59,16 @@ export function Hero() {
 
         {/* Subheadline */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          initial={{ opacity: 0, filter: "blur(10px)" }}
+          animate={{ opacity: 1, filter: "blur(0px)" }}
+          transition={{ delay: 0.5, duration: 0.8 }}
           className="text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
           style={{ color: "rgba(167,218,220,0.9)" }}
         >
           Vind shifts in horeca, retail, logistiek en events. 
-          Gemiddeld <span className="font-bold text-white">€20/uur</span>, 
-          betaald <span className="font-bold text-white">binnen minuten</span>.
-          Jij bepaalt wanneer en waar je werkt.
+          Stel je eigen <span className="font-bold text-white">tarief</span> in, 
+          werk wanneer <span className="font-bold text-white">jij wilt</span>.
+          Lagere fees dan de concurrentie.
         </motion.p>
 
         {/* CTA Buttons */}
@@ -85,7 +81,7 @@ export function Hero() {
           <motion.a
             href="/signup/worker"            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group relative px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2 animate-pulse-glow"
+            className="group relative px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2"
             style={{ background: "#EF476F" }}
           >
             Begin Vandaag

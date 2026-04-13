@@ -6,11 +6,9 @@ export function CTA() {
   return (
     <section id="aanmelden" className="py-24 px-4 relative overflow-hidden"
       style={{ background: "linear-gradient(135deg, #023047 0%, #012A3E 50%, #0A1628 100%)" }}>
-      {/* Orbs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full animate-float"
-        style={{ background: "radial-gradient(circle, rgba(239,71,111,0.12), transparent)" }} />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full animate-float"
-        style={{ background: "radial-gradient(circle, rgba(167,218,220,0.1), transparent)", animationDelay: "2s" }} />
+      {/* Subtle glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(239,71,111,0.06), transparent)" }} />
 
       <div className="max-w-3xl mx-auto text-center relative z-10">
         <motion.div
@@ -38,7 +36,7 @@ export function CTA() {
               href="/signup/worker"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="group px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2 animate-pulse-glow"
+              className="group px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2 "
               style={{ background: "#EF476F" }}
             >
               Ik wil werken <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
