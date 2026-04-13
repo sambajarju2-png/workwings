@@ -54,7 +54,7 @@ export function Navbar() {
               Inloggen
             </a>
             <motion.a
-              href="#aanmelden"
+              href="/signup/worker"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="text-sm font-bold text-white px-5 py-2.5 rounded-xl flex items-center gap-1"
@@ -89,7 +89,7 @@ export function Navbar() {
               ))}
               <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
                 <a href="#" className="text-white/70 text-center py-2">Inloggen</a>
-                <a href="#aanmelden" className="text-white font-bold text-center py-3 rounded-xl"
+                <a href="/signup/worker" className="text-white font-bold text-center py-3 rounded-xl"
                   style={{ background: "#EF476F" }}>
                   Start Nu
                 </a>

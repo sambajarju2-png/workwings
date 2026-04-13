@@ -2,6 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
 import { LogoMarquee } from "@/components/logo-marquee";
 import { Stats } from "@/components/stats";
+import { LiveShifts } from "@/components/live-shifts";
 import { HowItWorks } from "@/components/how-it-works";
 import { Features } from "@/components/features";
 import { Comparison } from "@/components/comparison";
@@ -20,6 +21,7 @@ export default function HomePage() {
       <Hero />
       <LogoMarquee />
       <Stats />
+      <LiveShifts />
       <HowItWorks />
       <Features />
       <Comparison />

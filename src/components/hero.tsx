@@ -83,8 +83,7 @@ export function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
           <motion.a
-            href="#aanmelden"
-            whileHover={{ scale: 1.05, y: -2 }}
+            href="/signup/worker"            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}
             className="group relative px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2 animate-pulse-glow"
             style={{ background: "#EF476F" }}
@@ -93,7 +92,7 @@ export function Hero() {
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </motion.a>
           <motion.a
-            href="#bedrijven"
+            href="/zakelijk"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}
             className="px-8 py-4 rounded-2xl text-white font-bold text-lg"
@@ -111,9 +110,9 @@ export function Hero() {
           className="flex flex-wrap items-center justify-center gap-3"
         >
           {[
-            { icon: <Clock size={14} />, text: "Betaald binnen minuten" },
-            { icon: <MapPin size={14} />, text: "1.500+ shifts per week" },
-            { icon: <Zap size={14} />, text: "Annuleer tot 24u van tevoren" },
+            { icon: <Clock size={14} />, text: "Snel uitbetaald" },
+            { icon: <MapPin size={14} />, text: "Shifts door heel NL" },
+            { icon: <Zap size={14} />, text: "Gratis aanmelden" },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm"
               style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>

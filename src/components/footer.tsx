@@ -19,16 +19,26 @@ export function Footer() {
           <div>
             <h4 className="text-white font-bold text-sm mb-4">Voor Freelancers</h4>
             <div className="space-y-2">
-              {["Vind Shifts", "Hoe het werkt", "Verdiensten", "Verzekering", "FAQ"].map(l => (
-                <a key={l} href="#" className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l}</a>
+              {[
+                { label: "Aanmelden", href: "/signup/worker" },
+                { label: "Shifts bekijken", href: "/shifts" },
+                { label: "Hoe het werkt", href: "/#hoe-werkt-het" },
+                { label: "Inloggen", href: "/login" },
+              ].map(l => (
+                <a key={l.label} href={l.href} className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l.label}</a>
               ))}
             </div>
           </div>
           <div>
             <h4 className="text-white font-bold text-sm mb-4">Voor Bedrijven</h4>
             <div className="space-y-2">
-              {["Vind Personeel", "Pricing", "Features", "Integraties", "Dashboard"].map(l => (
-                <a key={l} href="#" className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l}</a>
+              {[
+                { label: "Aanmelden", href: "/signup/company" },
+                { label: "Waarom WorkWings", href: "/zakelijk" },
+                { label: "Dashboard", href: "/admin" },
+                { label: "Inloggen", href: "/login" },
+              ].map(l => (
+                <a key={l.label} href={l.href} className="block text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>{l.label}</a>
               ))}
             </div>
           </div>
@@ -49,7 +59,7 @@ export function Footer() {
 
         <div className="border-t pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
           <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-            © 2026 WorkWings B.V. · KVK 12345678 · Alle rechten voorbehouden
+            © 2026 WorkWings B.V. (i.o.) · KVK 83474889 · Alle rechten voorbehouden
           </span>
           <div className="flex items-center gap-2">
             <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Made in the Netherlands</span>

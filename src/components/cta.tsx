@@ -35,7 +35,7 @@ export function CTA() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <motion.a
-              href="#"
+              href="/signup/worker"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="group px-8 py-4 rounded-2xl text-white font-bold text-lg flex items-center gap-2 animate-pulse-glow"
@@ -44,7 +44,7 @@ export function CTA() {
               Ik wil werken <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </motion.a>
             <motion.a
-              href="#"
+              href="/signup/company"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="px-8 py-4 rounded-2xl text-white font-bold text-lg"

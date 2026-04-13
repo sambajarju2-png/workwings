@@ -1,26 +1,30 @@
 "use client";
 import { motion } from "framer-motion";
+import { Shield, Banknote, Scale } from "lucide-react";
 
-const companies = [
-  "Starbucks", "DHL", "Albert Heijn", "Efteling", "HEMA", "Booking.com",
-  "Van der Valk", "Center Parcs", "Flink", "Uniqlo", "Zara", "Gamma",
+const trustItems = [
+  { icon: <Shield size={16} />, text: "Wet DBA compliant" },
+  { icon: <Banknote size={16} />, text: "Uitbetaling via Revolut" },
+  { icon: <Scale size={16} />, text: "Modelovereenkomst per shift" },
 ];
 
 export function LogoMarquee() {
   return (
-    <section className="py-12 overflow-hidden bg-surface">
-      <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-        className="text-center text-xs font-bold uppercase tracking-widest mb-6 text-foreground-subtle">
-        Vertrouwd door 350+ bedrijven in Nederland
-      </motion.p>
-      <div className="relative">
-        <div className="absolute left-0 top-0 bottom-0 w-24 z-10" style={{ background: "linear-gradient(to right, var(--color-surface), transparent)" }} />
-        <div className="absolute right-0 top-0 bottom-0 w-24 z-10" style={{ background: "linear-gradient(to left, var(--color-surface), transparent)" }} />
-        <div className="flex animate-marquee">
-          {[...companies, ...companies].map((name, i) => (
-            <div key={i} className="flex-shrink-0 mx-8 flex items-center justify-center h-10">
-              <span className="text-lg font-bold whitespace-nowrap text-foreground-subtle opacity-50">{name}</span>
-            </div>
+    <section className="py-8 bg-surface border-y" style={{ borderColor: "var(--color-border)" }}>
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+          {trustItems.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="flex items-center gap-2 text-sm text-foreground-muted"
+            >
+              <span style={{ color: "#A7DADC" }}>{item.icon}</span>
+              <span className="font-medium">{item.text}</span>
+            </motion.div>
           ))}
         </div>
       </div>

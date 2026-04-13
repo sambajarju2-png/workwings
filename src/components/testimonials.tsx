@@ -1,42 +1,53 @@
 "use client";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
-
-const testimonials = [
-  { name: "Lisa V.", role: "Barista · Amsterdam", text: "Eindelijk een platform waar ik zelf mijn tarief bepaal. De in-app chat is super handig — geen WhatsApp-groepen meer.", rating: 5 },
-  { name: "Kevin M.", role: "Orderpicker · Rotterdam", text: "Betaald binnen minuten na mijn shift. Bij de concurrent moest ik soms 2 weken wachten. Never going back.", rating: 5 },
-  { name: "Priya D.", role: "Eventhost · Utrecht", text: "De bedrijf-reviews zijn goud waard. Je weet precies wat je kunt verwachten voordat je ergens begint.", rating: 5 },
-];
+import { Rocket, ArrowRight } from "lucide-react";
 
 export function Testimonials() {
   return (
     <section className="py-24 px-4 bg-background-alt">
-      <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-          <span className="text-sm font-bold uppercase tracking-widest" style={{ color: "#EF476F" }}>Reviews</span>
-          <h2 className="text-4xl md:text-5xl font-black mt-4 text-foreground">Wat freelancers <span style={{ color: "#EF476F" }}>zeggen</span></h2>
+      <div className="max-w-3xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{ background: "rgba(167,218,220,0.1)", border: "1px solid rgba(167,218,220,0.2)" }}>
+            <Rocket size={14} style={{ color: "#A7DADC" }} />
+            <span className="text-sm font-semibold" style={{ color: "#A7DADC" }}>Early Access</span>
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4">
+            We zijn net <span style={{ color: "#EF476F" }}>gelanceerd</span>
+          </h2>
+          <p className="text-base md:text-lg text-foreground-muted leading-relaxed mb-8 max-w-xl mx-auto">
+            WorkWings is nieuw en groeit snel. Sluit je nu aan als early adopter
+            en profiteer van persoonlijke onboarding, directe support, en de laagste fees in de markt.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <motion.a
+              href="/signup/worker"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="group px-6 py-3.5 rounded-xl text-white font-bold text-sm flex items-center gap-2"
+              style={{ background: "#EF476F" }}
+            >
+              Meld je aan als freelancer
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </motion.a>
+            <motion.a
+              href="/signup/company"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="px-6 py-3.5 rounded-xl font-bold text-sm text-foreground"
+              style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
+            >
+              Meld je aan als bedrijf
+            </motion.a>
+          </div>
         </motion.div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }} whileHover={{ y: -6 }}
-              className="bg-surface p-6 rounded-2xl relative" style={{ boxShadow: "0 1px 3px rgba(2,48,71,0.06)", border: "1px solid var(--color-border)" }}>
-              <div className="flex gap-0.5 mb-4">
-                {Array.from({ length: t.rating }).map((_, j) => (<Star key={j} size={16} fill="#EF476F" color="#EF476F" />))}
-              </div>
-              <p className="text-sm leading-relaxed mb-6 text-foreground-muted">&ldquo;{t.text}&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: "#023047" }}>
-                  {t.name.split(" ").map(w => w[0]).join("")}
-                </div>
-                <div>
-                  <div className="font-bold text-sm text-foreground">{t.name}</div>
-                  <div className="text-xs text-foreground-subtle">{t.role}</div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
